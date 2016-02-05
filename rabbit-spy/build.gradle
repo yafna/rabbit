@@ -1,0 +1,29 @@
+version 'unspecified'
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.ow2.asm:asm-all:5.0.4'
+}
+
+clean{
+    doFirst {
+        delete file('../sandbox/rabbit-spy.jar')
+    }
+}
+
+jar{
+    manifest {
+        attributes 'Premain-Class': 'hare.asm.HAgent'
+    }
+    doLast {
+        copy {
+            from 'build/libs/rabbit-spy.jar'
+            into "../sandbox/"
+        }
+    }
+}

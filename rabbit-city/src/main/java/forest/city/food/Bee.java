@@ -1,7 +1,7 @@
 package forest.city.food;
 
 public class Bee {
-    public String fly(){
-        return "beeefly";
+    public void  fly(){
+        System.out.println(" Bee " + "beeefly");
     }
 }

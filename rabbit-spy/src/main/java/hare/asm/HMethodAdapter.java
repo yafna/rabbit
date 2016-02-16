@@ -23,8 +23,7 @@ public class HMethodAdapter extends AdviceAdapter {
         logSimple("Method end ");
     }
 
-    private void logSimple(String preffix){
-
+    private void logSimple(String prefix){
         visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Thread", "currentThread",
                 Type.getMethodDescriptor(Type.getType(Thread.class)), false);
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Thread", "getName",
@@ -40,13 +39,13 @@ public class HMethodAdapter extends AdviceAdapter {
         visitInsn(Opcodes.DUP);
 
         visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
-        visitLdcInsn(preffix + " Millis : ");
+        visitLdcInsn(prefix + " Millis : ");
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
                 Type.getMethodDescriptor(Type.getType(StringBuilder.class), Type.getType(String.class)), false);
         visitVarInsn(Opcodes.LLOAD, 2);
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
                 Type.getMethodDescriptor(Type.getType(StringBuilder.class), Type.LONG_TYPE), false);
-        visitLdcInsn(" Th name ");
+        visitLdcInsn(" Th name : ");
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
                 Type.getMethodDescriptor(Type.getType(StringBuilder.class), Type.getType(String.class)), false);
         visitVarInsn(Opcodes.ALOAD, 1);

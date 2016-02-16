@@ -1,5 +1,4 @@
 rootProject.name = 'rabbit'
-include 'rabbit-agent'
 include 'rabbit-city'
 include 'rabbit-spy'
 

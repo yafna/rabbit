@@ -15,7 +15,6 @@ configurations {
 dependencies {
     city project (':rabbit-city')
     scheduleRuntimeAsm 'org.ow2.asm:asm-all:5.0.4'
-//    scheduleRuntime project (':rabbit-spy')
 
     scheduleRuntimeBuddy 'net.bytebuddy:byte-buddy:1.1.0'
     scheduleRuntimeBuddy 'net.bytebuddy:byte-buddy-agent:1.1.0'
@@ -28,11 +27,6 @@ task runAppASM(type: JavaExec, group : 'exec') {
     jvmArgs=['-javaagent:../sandbox/rabbit-spy.jar']
 }
 
-task runAppBuddy(type: JavaExec, group : 'exec') {
-    classpath = configurations.city + configurations.scheduleRuntimeBuddy
-    main = 'forest.city.Main'
-    jvmArgs=['-javaagent:../sandbox/rabbit-agent.jar']
-}
 clean{
     doFirst {
         delete file('../sandbox/rabbit-city.jar')

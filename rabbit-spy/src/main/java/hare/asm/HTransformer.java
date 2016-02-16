@@ -17,7 +17,7 @@ public class HTransformer implements ClassFileTransformer {
                 ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
                 ClassVisitor cc = new HClassVisitor(cw);
                 ClassReader cr = new ClassReader(classfileBuffer);
-                cr.accept(cc, ClassReader.SKIP_DEBUG);
+                cr.accept(cc, ClassReader.EXPAND_FRAMES);
                 return cw.toByteArray();
             } catch (Throwable th) {
                 System.out.println("alarmalarm " + th.getLocalizedMessage());

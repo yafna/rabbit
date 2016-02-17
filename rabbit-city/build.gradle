@@ -9,15 +9,12 @@ repositories {
 configurations {
     city
     scheduleRuntimeAsm
-    scheduleRuntimeBuddy
 }
 
 dependencies {
     city project (':rabbit-city')
+    city project (':rabbit-chronicler')
     scheduleRuntimeAsm 'org.ow2.asm:asm-all:5.0.4'
-
-    scheduleRuntimeBuddy 'net.bytebuddy:byte-buddy:1.1.0'
-    scheduleRuntimeBuddy 'net.bytebuddy:byte-buddy-agent:1.1.0'
 }
 
 

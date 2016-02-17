@@ -6,21 +6,25 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 
 public class HMethodAdapter extends AdviceAdapter {
+    private String className;
+    private String methodName;
 
-    protected HMethodAdapter(int api, MethodVisitor mv, int access, String name, String desc) {
+    protected HMethodAdapter(int api, MethodVisitor mv, int access, String name, String desc, String className) {
         super(api, mv, access, name, desc);
+        this.className = className;
+        this.methodName = name;
     }
 
     @Override
     protected void onMethodEnter() {
-        logSimple("Method start ");
+        logSimple("start ");
         super.onMethodEnter();
     }
 
     @Override
     protected void onMethodExit(int opcode) {
         super.onMethodExit(opcode);
-        logSimple("Method end ");
+        logSimple("end ");
     }
 
     private void logSimple(String prefix){
@@ -34,12 +38,10 @@ public class HMethodAdapter extends AdviceAdapter {
                 Type.getMethodDescriptor(Type.LONG_TYPE), false);
         visitVarInsn(Opcodes.LSTORE, 2);
 
-        visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
         visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
         visitInsn(Opcodes.DUP);
-
         visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
-        visitLdcInsn(prefix + " Millis : ");
+        visitLdcInsn(prefix + " " + className + "."+ methodName  +" Millis : ");
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
                 Type.getMethodDescriptor(Type.getType(StringBuilder.class), Type.getType(String.class)), false);
         visitVarInsn(Opcodes.LLOAD, 2);
@@ -54,7 +56,10 @@ public class HMethodAdapter extends AdviceAdapter {
 
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString",
                 Type.getMethodDescriptor(Type.getType(String.class)), false);
-        visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println",
+        visitVarInsn(Opcodes.ASTORE, 1);
+        visitFieldInsn(Opcodes.GETSTATIC, "hare/writer/CustomWriter", "INSTANCE", "Lhare/writer/CustomWriter;");
+        visitVarInsn(Opcodes.ALOAD, 1);
+        visitMethodInsn(Opcodes.INVOKEVIRTUAL, "hare/writer/CustomWriter", "log",
                 Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class)), false);
     }
 }

@@ -15,7 +15,7 @@ public class HTransformer implements ClassFileTransformer {
         if (className.startsWith("forest/city")) {
             try {
                 ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-                ClassVisitor cc = new HClassVisitor(cw);
+                ClassVisitor cc = new HClassVisitor(cw, className);
                 ClassReader cr = new ClassReader(classfileBuffer);
                 cr.accept(cc, ClassReader.EXPAND_FRAMES);
                 return cw.toByteArray();

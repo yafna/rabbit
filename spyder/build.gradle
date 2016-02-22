@@ -12,7 +12,7 @@ dependencies {
 
 clean{
     doFirst {
-        delete file('../sandbox/rabbit-spy.jar')
+        delete file('../sandbox/spyder.jar')
     }
 }
 
@@ -22,7 +22,7 @@ jar{
     }
     doLast {
         copy {
-            from 'build/libs/rabbit-spy.jar'
+            from 'build/libs/spyder.jar'
             into "../sandbox/"
         }
     }

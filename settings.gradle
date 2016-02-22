@@ -1,5 +1,5 @@
 rootProject.name = 'rabbit'
 include 'rabbit-city'
-include 'rabbit-spy'
-include 'rabbit-chronicler'
-
+include 'spyder'
+include 'hampster'
+include 'rat'

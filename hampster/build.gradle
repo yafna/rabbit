@@ -9,14 +9,14 @@ dependencies {
 
 clean{
     doFirst {
-        delete file('../sandbox/rabbit-chronicler.jar')
+        delete file('../sandbox/hampster.jar')
     }
 }
 
 jar{
     doLast {
         copy {
-            from 'build/libs/rabbit-chronicler.jar'
+            from 'build/libs/hampster.jar'
             into "../sandbox/"
         }
     }

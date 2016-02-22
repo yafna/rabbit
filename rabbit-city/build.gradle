@@ -13,7 +13,7 @@ configurations {
 
 dependencies {
     city project (':rabbit-city')
-    city project (':rabbit-chronicler')
+    city project (':hampster')
     scheduleRuntimeAsm 'org.ow2.asm:asm-all:5.0.4'
 }
 

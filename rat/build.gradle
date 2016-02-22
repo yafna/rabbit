@@ -1,0 +1,25 @@
+version 'unspecified'
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+
+clean{
+    doFirst {
+        delete file('../sandbox/rat.jar')
+    }
+}
+
+jar{
+    doLast {
+        copy {
+            from 'build/libs/rat.jar'
+            into "../sandbox/"
+        }
+    }
+}

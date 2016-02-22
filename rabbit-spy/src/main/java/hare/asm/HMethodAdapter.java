@@ -17,14 +17,14 @@ public class HMethodAdapter extends AdviceAdapter {
 
     @Override
     protected void onMethodEnter() {
-        logSimple("start ");
+        logSimple("s|");
         super.onMethodEnter();
     }
 
     @Override
     protected void onMethodExit(int opcode) {
         super.onMethodExit(opcode);
-        logSimple("end ");
+        logSimple("e|");
     }
 
     private void logSimple(String prefix){
@@ -41,13 +41,13 @@ public class HMethodAdapter extends AdviceAdapter {
         visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
         visitInsn(Opcodes.DUP);
         visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
-        visitLdcInsn(prefix + " " + className + "."+ methodName  +" Millis : ");
+        visitLdcInsn(prefix + className + "."+ methodName  +"|");
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
                 Type.getMethodDescriptor(Type.getType(StringBuilder.class), Type.getType(String.class)), false);
         visitVarInsn(Opcodes.LLOAD, 2);
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
                 Type.getMethodDescriptor(Type.getType(StringBuilder.class), Type.LONG_TYPE), false);
-        visitLdcInsn(" Th name : ");
+        visitLdcInsn("|");
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
                 Type.getMethodDescriptor(Type.getType(StringBuilder.class), Type.getType(String.class)), false);
         visitVarInsn(Opcodes.ALOAD, 1);

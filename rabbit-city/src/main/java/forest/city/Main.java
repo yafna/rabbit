@@ -9,7 +9,7 @@ public class Main {
         Bee bee = new Bee();
         bee.fly();
         Carrot c = new Carrot();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 7; i++) {
             Thread t = new Thread(c);
             t.start();
         }

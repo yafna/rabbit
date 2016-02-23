@@ -13,7 +13,7 @@ public class CustomWriter {
     public final static CustomWriter INSTANCE = new CustomWriter();
     private BufferedWriter writer = null;
     private List<String> messages = new ArrayList<>();
-    private String fileName = "fffffuuu.txt";
+    private String fileName = "sandbox/fffffuuu.txt";
 
     private CustomWriter() {
         File f = Paths.get(fileName).toFile();

@@ -1,0 +1,21 @@
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    city
+    scheduleRuntimeAsm
+}
+
+dependencies {
+    city project (':rabbit-city')
+    city project (':hampster')
+    scheduleRuntimeAsm 'org.ow2.asm:asm-all:5.0.4'
+}
+
+
+task runAppASM(type: JavaExec, group : 'exec') {
+    classpath = configurations.city + configurations.scheduleRuntimeAsm
+    main = 'forest.city.Main'
+    jvmArgs=['-javaagent:sandbox/spyder.jar']
+}

@@ -1,0 +1,38 @@
+<div class="col-md-12 upper-gap" ng-controller="InteractiveCtrl as actrl">
+    <div class="row">
+        <button ng-click="actrl.getPack()" type="button" class="btn btn-primary">get pack</button>
+
+        <!--<div class="col-md-4">-->
+        <!--<label for="prName"></label>-->
+        <!--<input ng-model="actrl.prNameSub" type="text" id="prName" placeholder="Any product">-->
+        <!--</div>-->
+    </div>
+    <div class="row">
+        <table class="col-md-12 table table-striped upper-gap">
+            <tr>
+                <th> className</th>
+                <th> methodName</th>
+                <th> time</th>
+                <th> thName</th>
+                <th> isStart</th>
+            </tr>
+            <tr ng-repeat="item in actrl.mtds">
+                <td>
+                    {{item.className}}
+                </td>
+                <td>
+                    {{item.methodName}}
+                </td>
+                <td>
+                    {{item.time}}
+                </td>
+                <td>
+                    {{item.thName}}
+                </td>
+                <td>
+                    {{item.isStart}}
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

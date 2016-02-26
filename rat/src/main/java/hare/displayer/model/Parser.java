@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 /**
  * rough parsers
  * rules definitions are under progress
- * will be replaceds nicely later
+ * will be replaced nicely later
  */
 public class Parser {
     private static final String METHOD_REGEX = "[s|e]\\|[\\w/]+\\|[<>\\w]+\\|[0-9]+\\|.+";

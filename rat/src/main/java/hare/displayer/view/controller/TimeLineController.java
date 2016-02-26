@@ -1,13 +1,24 @@
 package hare.displayer.view.controller;
 
+import hare.displayer.model.MethodInfo;
+import hare.displayer.service.TimeLine;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
-@RequestMapping("/hello")
+@RequestMapping("/data")
 public class TimeLineController {
-    @RequestMapping("/hh")
-    public String index() {
-        return "index";
+    @Autowired
+    public TimeLine timeLine;
+
+    @RequestMapping("/pack")
+    public
+    @ResponseBody
+    List<MethodInfo> getDefaultPack() {
+        return timeLine.getPackOfData(5);
     }
 }

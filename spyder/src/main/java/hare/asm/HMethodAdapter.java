@@ -41,7 +41,7 @@ public class HMethodAdapter extends AdviceAdapter {
         visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
         visitInsn(Opcodes.DUP);
         visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
-        visitLdcInsn(prefix + className + "."+ methodName  +"|");
+        visitLdcInsn(prefix + className + "|"+ methodName  +"|");
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
                 Type.getMethodDescriptor(Type.getType(StringBuilder.class), Type.getType(String.class)), false);
         visitVarInsn(Opcodes.LLOAD, 2);

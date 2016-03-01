@@ -9,6 +9,7 @@ angular.module('myApp.interactive', ['ngRoute'])
     }])
     .controller('InteractiveCtrl', ['$http', function ($http) {
         var self = this;
+        var thNames = [];
         self.getPack = function () {
             getData().then(
                 function (resp) {
@@ -16,6 +17,13 @@ angular.module('myApp.interactive', ['ngRoute'])
                         self.mtds = resp.data;
                     } else {
                         self.mtds = self.mtds.concat(resp.data);
+                    }
+                    var i = 0;
+                    while (i < resp.data.length) {
+                        if (thNames.indexOf(resp.data[i].thName) == -1) {
+                            thNames.push(resp.data[i].thName)
+                        }
+                        i++;
                     }
                 }
             );

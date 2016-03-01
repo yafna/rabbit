@@ -12,5 +12,5 @@ public class MethodInfo implements Serializable{
     private String methodName;
     private Long time;
     private String thName;
-    private boolean isStart;
+    private boolean start;
 }

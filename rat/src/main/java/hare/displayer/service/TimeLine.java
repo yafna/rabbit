@@ -13,6 +13,9 @@ import java.nio.channels.ByteChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -59,7 +62,7 @@ public class TimeLine {
                 line = reader.readLine();
             }
 
-            if(Parser.isMethodLine(line)){
+            if(line != null && Parser.isMethodLine(line)){
                 res.add(Parser.getMethodLine(line));
             }
 

@@ -18,7 +18,7 @@ public class TimeLine {
     private BufferedReader reader = null;
 
     public TimeLine() {
-        this(Defaults.FILE_NAME_PREFIX);
+        this("../" +Defaults.FILE_NAME_PREFIX);
     }
 
     private TimeLine(String fileName) {

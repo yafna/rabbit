@@ -7,23 +7,16 @@ angular.module('myApp.interactive', ['ngRoute'])
             controller: 'InteractiveCtrl'
         });
     }])
-    .controller('InteractiveCtrl', ['$http', function ($http) {
+    .controller('InteractiveCtrl', ['$scope', '$http', function ($scope, $http) {
         var self = this;
-        var thNames = [];
+        $scope.mtds = [];
         self.getPack = function () {
             getData().then(
                 function (resp) {
-                    if (self.mtds === undefined) {
-                        self.mtds = resp.data;
+                    if ($scope.mtds === undefined) {
+                        $scope.mtds = resp.data;
                     } else {
-                        self.mtds = self.mtds.concat(resp.data);
-                    }
-                    var i = 0;
-                    while (i < resp.data.length) {
-                        if (thNames.indexOf(resp.data[i].thName) == -1) {
-                            thNames.push(resp.data[i].thName)
-                        }
-                        i++;
+                        $scope.mtds = $scope.mtds.concat(resp.data);
                     }
                 }
             );
@@ -31,4 +24,44 @@ angular.module('myApp.interactive', ['ngRoute'])
         function getData() {
             return $http.get("/data/pack");
         }
+    }]).directive('drawing', [function () {
+        var dir = {};
+        dir.restrict = "AEC";
+        dir.scope = {
+            mtds: '='
+        };
+        dir.link = function (scope, element) {
+            var thNames = [];
+            var clNames = [];
+            scope.$watch(
+                function () {
+                    return scope.mtds;
+                },
+                function (obj) {
+                    console.log("I see a data change!");
+                    var i = 0;
+                    while (i < obj.length) {
+                        if (thNames.indexOf(obj[i].thName) == -1) {
+                            thNames.push(obj[i].thName)
+                        }
+                        if (clNames.indexOf(obj[i].className) == -1) {
+                            clNames.push(obj[i].className)
+                        }
+                        i++;
+                    }
+                }, true);
+
+            function draw(lX, lY, cX, cY) {
+                // line from
+                ctx.moveTo(lX, lY);
+                // to
+                ctx.lineTo(cX, cY);
+                // color
+                ctx.strokeStyle = "#4bf";
+                // draw it
+                ctx.stroke();
+            }
+        };
+
+        return dir;
     }]);

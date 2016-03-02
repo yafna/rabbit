@@ -3,32 +3,37 @@
         <button ng-click="actrl.getPack()" type="button" class="btn btn-primary">get pack</button>
     </div>
 
-    <div class="row">
-        <table class="col-md-12 table table-striped upper-gap">
-            <tr>
-                <th> className</th>
-                <th> methodName</th>
-                <th> time</th>
-                <th> thName</th>
-                <th> isStart</th>
-            </tr>
-            <tr ng-repeat="item in actrl.mtds">
-                <td>
-                    {{item.className}}
-                </td>
-                <td>
-                    {{item.methodName}}
-                </td>
-                <td>
-                    {{item.time}}
-                </td>
-                <td>
-                    {{item.thName}}
-                </td>
-                <td>
-                    {{item.start}}
-                </td>
-            </tr>
-        </table>
+    <div class="row" style="height: 100%">
+        <div class="col-md-6" style="height: 100%">
+            <canvas drawing mtds="mtds"></canvas>
+        </div>
+        <div class="col-md-6">
+            <table class="col-md-12 table table-striped upper-gap">
+                <tr>
+                    <th> className</th>
+                    <th> methodName</th>
+                    <th> time</th>
+                    <th> thName</th>
+                    <th> isStart</th>
+                </tr>
+                <tr ng-repeat="item in actrl.mtds">
+                    <td>
+                        {{item.className}}
+                    </td>
+                    <td>
+                        {{item.methodName}}
+                    </td>
+                    <td>
+                        {{item.time}}
+                    </td>
+                    <td>
+                        {{item.thName}}
+                    </td>
+                    <td>
+                        {{item.start}}
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>

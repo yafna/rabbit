@@ -1,7 +1,7 @@
 package hare.displayer.view.controller;
 
-import hare.displayer.model.MethodInfo;
 import hare.displayer.service.TimeLine;
+import model.MethodInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

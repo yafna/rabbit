@@ -1,5 +1,6 @@
 package hare.displayer.model;
 
+import model.Parser;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,30 +1,24 @@
 package hare.displayer.service;
 
-import hare.displayer.model.MethodInfo;
-import hare.displayer.model.Parser;
+import hare.writer.Defaults;
+import model.Parser;
+import model.MethodInfo;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.channels.ByteChannel;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class TimeLine {
     private BufferedReader reader = null;
-    private static final String fileName = "sandbox/fffffuuu.txt";
 
     public TimeLine() {
-        this("../" + fileName);
+        this(Defaults.FILE_NAME_PREFIX);
     }
 
     private TimeLine(String fileName) {

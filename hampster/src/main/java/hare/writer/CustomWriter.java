@@ -1,6 +1,8 @@
 package hare.writer;
 
 
+import model.MethodInfo;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -13,15 +15,14 @@ public class CustomWriter {
     public final static CustomWriter INSTANCE = new CustomWriter();
     private BufferedWriter writer = null;
     private List<String> messages = new ArrayList<>();
-    private String fileName = "sandbox/fffffuuu.txt";
 
     private CustomWriter() {
-        File f = Paths.get(fileName).toFile();
+        File f = Paths.get(Defaults.FILE_NAME_PREFIX).toFile();
         if (f.exists()) {
             f.delete();
         }
         try {
-            writer = new BufferedWriter(new FileWriter(fileName, true));
+            writer = new BufferedWriter(new FileWriter(Defaults.FILE_NAME_PREFIX, true));
         } catch (IOException e) {
             System.out.println("no logging for us = " + e.getLocalizedMessage());
         }
@@ -40,6 +41,11 @@ public class CustomWriter {
 
     public synchronized void log(String s) {
         write(s);
+    }
+
+    public synchronized void log(boolean isStart, String className, String methodName, long timestamp, String thName) {
+        MethodInfo mi = new MethodInfo(className, methodName, timestamp, thName, isStart);
+        write(mi.toString());
     }
 
     private void write(String msg) {

@@ -1,4 +1,4 @@
-package hare.displayer.model;
+package model;
 
 import java.util.regex.Pattern;
 

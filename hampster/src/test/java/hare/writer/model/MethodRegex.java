@@ -1,4 +1,4 @@
-package hare.displayer.model;
+package hare.writer.model;
 
 import model.Parser;
 import org.junit.Assert;

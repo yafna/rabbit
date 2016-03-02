@@ -1,6 +1,6 @@
 package hare.displayer.service;
 
-import hare.displayer.model.MethodInfo;
+import model.MethodInfo;
 import org.junit.Assert;
 import org.junit.Test;
 

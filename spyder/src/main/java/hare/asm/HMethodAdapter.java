@@ -1,5 +1,7 @@
 package hare.asm;
 
+import hare.writer.CustomWriter;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -17,17 +19,30 @@ public class HMethodAdapter extends AdviceAdapter {
 
     @Override
     protected void onMethodEnter() {
-        logSimple("s|");
+        log(true, className, methodName);
         super.onMethodEnter();
     }
 
     @Override
     protected void onMethodExit(int opcode) {
         super.onMethodExit(opcode);
-        logSimple("e|");
+        log(false, className, methodName);
     }
 
-    private void logSimple(String prefix){
+    private void log(boolean isStart, String className, String methodName) {
+        visitFieldInsn(Opcodes.GETSTATIC, "hare/writer/CustomWriter", "INSTANCE", "Lhare/writer/CustomWriter;");
+        visitLdcInsn(isStart);
+        visitLdcInsn(className);
+        visitLdcInsn(methodName);
+        visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", Type.getMethodDescriptor(Type.LONG_TYPE), false);
+        visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Thread", "currentThread", Type.getMethodDescriptor(Type.getType(Thread.class)), false);
+        visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Thread", "getName", Type.getMethodDescriptor(Type.getType(String.class)), false);
+        visitMethodInsn(Opcodes.INVOKEVIRTUAL, "hare/writer/CustomWriter", "log",
+                Type.getMethodDescriptor(Type.VOID_TYPE, Type.BOOLEAN_TYPE, Type.getType(String.class),
+                        Type.getType(String.class), Type.LONG_TYPE, Type.getType(String.class)), false);
+    }
+
+    private void logSimple(String prefix) {
         visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Thread", "currentThread",
                 Type.getMethodDescriptor(Type.getType(Thread.class)), false);
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Thread", "getName",

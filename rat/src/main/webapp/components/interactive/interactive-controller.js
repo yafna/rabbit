@@ -31,6 +31,8 @@ angular.module('myApp.interactive', ['ngRoute'])
             mtds: '='
         };
         dir.link = function (scope, element) {
+            var ctx = element[0].getContext('2d');
+
             var thNames = [];
             var clNames = [];
             scope.$watch(
@@ -49,17 +51,43 @@ angular.module('myApp.interactive', ['ngRoute'])
                         }
                         i++;
                     }
-                }, true);
+                    redraw(clNames);
+                }, true
+            );
 
-            function draw(lX, lY, cX, cY) {
+            function redraw(clNames) {
+                //clearup
+                ctx.clearRect(0,0,500,500);
+
+                var gap = 0;
+                if (clNames.length > 0) {
+                    gap = (400 / clNames.length) - 10;
+                }
+
+                var i = 0;
+                var currentLinePos = 10;
+                while (i < clNames.length) {
+                    if (clNames[i] != undefined) {
+                        i++;
+                        draw(currentLinePos, 30, currentLinePos, 470, clNames[i]);
+                        currentLinePos += gap;
+                    }
+                }
+            }
+
+
+            function draw(lX, lY, cX, cY, text) {
                 // line from
-                ctx.moveTo(lX, lY);
+                ctx.moveTo(lX, lY + 5);
                 // to
                 ctx.lineTo(cX, cY);
                 // color
                 ctx.strokeStyle = "#4bf";
                 // draw it
                 ctx.stroke();
+                //text
+                ctx.font = "10px Arial";
+                ctx.fillText(text, lX, lY);
             }
         };
 

@@ -43,8 +43,8 @@ public class CustomWriter {
         write(s);
     }
 
-    public synchronized void log(boolean isStart, String className, String methodName, long timestamp, String thName) {
-        MethodInfo mi = new MethodInfo(className, methodName, timestamp, thName, isStart);
+    public synchronized void log(boolean isStart, String className, String methodName, long timestamp, String thName, int hash) {
+        MethodInfo mi = new MethodInfo(className, methodName, timestamp, thName, isStart, hash);
         write(mi.toString());
     }
 

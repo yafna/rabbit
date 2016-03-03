@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * will be replaced nicely later
  */
 public class Parser {
-    private static final String METHOD_REGEX = "[s|e]\\|[\\w/]+\\|[<>\\w]+\\|[0-9]+\\|.+";
+    private static final String METHOD_REGEX = "[s|e]\\|[\\w/]+\\|[<>\\w]+\\|[0-9]+\\|.+\\|[0-9]+";
     private static final Pattern mp = Pattern.compile(METHOD_REGEX);
 
     public static boolean isMethodLine(String str) {
@@ -17,7 +17,8 @@ public class Parser {
 
     public static MethodInfo getMethodLine(String str) {
         String[] strings = str.split("\\|");
-        Long time = Long.parseLong(strings[3]);
-        return new MethodInfo(strings[1], strings[2], time, strings[4], strings[0].charAt(0) == 's');
+        long time = Long.parseLong(strings[3]);
+        int hash = Integer.parseInt(strings[5]);
+        return new MethodInfo(strings[1], strings[2], time, strings[4], strings[0].charAt(0) == 's', hash);
     }
 }

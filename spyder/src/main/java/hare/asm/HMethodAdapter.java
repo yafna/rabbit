@@ -1,7 +1,5 @@
 package hare.asm;
 
-import hare.writer.CustomWriter;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -29,17 +27,19 @@ public class HMethodAdapter extends AdviceAdapter {
         log(false, className, methodName);
     }
 
-    private void log(boolean isStart, String className, String methodName) {
+    private void log(boolean isStart, String clazName, String methodName) {
         visitFieldInsn(Opcodes.GETSTATIC, "hare/writer/CustomWriter", "INSTANCE", "Lhare/writer/CustomWriter;");
         visitLdcInsn(isStart);
-        visitLdcInsn(className);
+        visitLdcInsn(clazName);
         visitLdcInsn(methodName);
         visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", Type.getMethodDescriptor(Type.LONG_TYPE), false);
         visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Thread", "currentThread", Type.getMethodDescriptor(Type.getType(Thread.class)), false);
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Thread", "getName", Type.getMethodDescriptor(Type.getType(String.class)), false);
+        visitVarInsn(Opcodes.ALOAD, 0);
+        visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "identityHashCode", Type.getMethodDescriptor(Type.INT_TYPE, Type.getType(Object.class)), false);
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "hare/writer/CustomWriter", "log",
-                Type.getMethodDescriptor(Type.VOID_TYPE, Type.BOOLEAN_TYPE, Type.getType(String.class),
-                        Type.getType(String.class), Type.LONG_TYPE, Type.getType(String.class)), false);
+                Type.getMethodDescriptor(Type.VOID_TYPE, Type.BOOLEAN_TYPE, Type.getType(String.class), Type.getType(String.class),
+                        Type.LONG_TYPE, Type.getType(String.class), Type.INT_TYPE), false);
     }
 
     private void logSimple(String prefix) {
@@ -56,7 +56,7 @@ public class HMethodAdapter extends AdviceAdapter {
         visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
         visitInsn(Opcodes.DUP);
         visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
-        visitLdcInsn(prefix + className + "|"+ methodName  +"|");
+        visitLdcInsn(prefix + className + "|" + methodName + "|");
         visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
                 Type.getMethodDescriptor(Type.getType(StringBuilder.class), Type.getType(String.class)), false);
         visitVarInsn(Opcodes.LLOAD, 2);

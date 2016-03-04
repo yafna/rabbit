@@ -1,8 +1,8 @@
 package hare.displayer.service;
 
 import hare.writer.Defaults;
-import model.Parser;
 import model.MethodInfo;
+import model.Parser;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -18,11 +18,11 @@ public class TimeLine {
     private BufferedReader reader = null;
 
     public TimeLine() {
-        this("../" +Defaults.FILE_NAME_PREFIX);
+        this("../" + Defaults.FILE_NAME_PREFIX);
     }
 
     private TimeLine(String fileName) {
-        if(! Paths.get(fileName).toFile().exists()){
+        if (!Paths.get(fileName).toFile().exists()) {
             System.out.println("fileName = " + fileName);
         }
         try {
@@ -30,7 +30,7 @@ public class TimeLine {
         } catch (FileNotFoundException e) {
             System.out.println("failed to read data = " + e.getLocalizedMessage());
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(){
+        Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 if (reader != null) {
@@ -48,19 +48,19 @@ public class TimeLine {
         List<MethodInfo> res = new ArrayList<>();
         try {
             String line = reader.readLine();
-            while (line != null && size > 1){
-                if(Parser.isMethodLine(line)){
+            while (line != null && size > 1) {
+                if (Parser.isMethodLine(line)) {
                     res.add(Parser.getMethodLine(line));
                 }
                 size--;
                 line = reader.readLine();
             }
 
-            if(line != null && Parser.isMethodLine(line)){
+            if (line != null && Parser.isMethodLine(line)) {
                 res.add(Parser.getMethodLine(line));
             }
 
-        }catch (IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
         return res;

@@ -1,6 +1,6 @@
-package forest.city.food;
+package forest.city.food.grass;
 
-public class Carrot implements Runnable {
+public class Carrot extends Healthy implements Runnable {
 
     @Override
     public void run() {

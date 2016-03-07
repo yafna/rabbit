@@ -136,10 +136,7 @@ angular.module('myApp.interactive', ['ngRoute'])
 
             function drawTime(obj, str, tmmin, tmmax) {
                 var upperGap = 40;
-                var timeitem = (tmmax - tmmin) / h;
-                if (timeitem < 15) {
-                    timeitem = 15;
-                }
+                var timeitem =  (h - upperGap-10) / (tmmax - tmmin) ;
 
                 var i = 0;
                 while (i < obj.length) {
@@ -172,12 +169,7 @@ angular.module('myApp.interactive', ['ngRoute'])
                 // line from
                 ctx.moveTo(lX, lY);
                 // to
-                var crv = 0;
-                if(up){
-                    crv = 10;
-                }else{
-                    crv = -10;
-                }
+                var crv = 10 * (up? -1 : 1);
                 ctx.bezierCurveTo(lX, lY + crv, cX, lY + crv, cX, cY);
                 // color
                 ctx.strokeStyle = clr;

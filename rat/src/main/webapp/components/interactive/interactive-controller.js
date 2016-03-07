@@ -7,10 +7,35 @@ angular.module('myApp.interactive', ['ngRoute'])
             controller: 'InteractiveCtrl'
         });
     }])
-    .controller('InteractiveCtrl', ['$scope', '$http', function ($scope, $http) {
+    .controller('InteractiveCtrl', ['$scope', '$http', '$interval',function ($scope, $http, $interval) {
         var self = this;
         $scope.mtds = [];
+        var stop;
+        self.startTimer = function() {
+            if ( angular.isDefined(stop) ) return;
+            stop = $interval(function() {
+                getData().then(
+                    function (resp) {
+                        if (self.mtds === undefined) {
+                            self.mtds = resp.data;
+                            $scope.mtds = self.mtds;
+                        } else {
+                            self.mtds = self.mtds.concat(resp.data);
+                            $scope.mtds = self.mtds;
+                        }
+                    }
+                );
+            }, 500);
+        };
+        self.stopTimer = function() {
+            if (angular.isDefined(stop)) {
+                $interval.cancel(stop);
+                stop = undefined;
+            }
+        };
+
         self.getPack = function () {
+            if (! angular.isDefined(stop) ) return;
             getData().then(
                 function (resp) {
                     if (self.mtds === undefined) {

@@ -15,10 +15,11 @@ angular.module('myApp.interactive', ['ngRoute'])
                 function (resp) {
                     if (self.mtds === undefined) {
                         self.mtds = resp.data;
+                        $scope.mtds = self.mtds;
                     } else {
                         self.mtds = self.mtds.concat(resp.data);
+                        $scope.mtds = self.mtds;
                     }
-                    $scope.mtds = self.mtds;
                 }
             );
         };
@@ -32,89 +33,167 @@ angular.module('myApp.interactive', ['ngRoute'])
             mtds: '='
         };
         dir.link = function (scope, element) {
+            var w = 700;
+            var h = 700;
+            var thGap = 20;
+            var thclr = '#ff0000';
+            var clzclrs = ['#206020', '#336600', '#446600', '#008000', '#006633', '#004d00', '#009900'];
             var ctx = element[0].getContext('2d');
-            //var h = element[0].style.height;
-            //var w = element[0].style.width;
-            var h = 650;
-            var w = 300;
-            var gap = 20;
-            var thNames = [];
-            var clNames = [];
-            var a = {};
-            var threadSrcW = 5;
-            var blocksClrs = ['#00cc44', '#006600', '#004d00', '#208000', '#1f7a7a'];
-            var threadClrs = ['#ff1a1a', '#ff3333', '#ff4d4d', '#cc0000', '#b30000'];
-            var threadSrcClr = '#FF0000';
+            element[0].setAttribute('width', w);
+            element[0].setAttribute('height', h);
             scope.$watch(
                 function () {
                     return scope.mtds;
                 },
                 function (obj) {
                     console.log("I see a data change!");
-                    var i = 0;
-                    while (i < obj.length) {
-                        if (thNames.indexOf(obj[i].thName) == -1) {
-                            thNames.push(obj[i].thName)
+                    if (obj != undefined && obj[0] != undefined) {
+                        var i = 0;
+                        var str = [];
+                        var thNames = [];
+                        var clNames = [];
+                        var thclrind = 0;
+                        var tmmin = obj[0].time;
+                        var tmmax = obj[0].time;
+                        while (i < obj.length) {
+                            if (tmmin > obj[i].time) {
+                                tmmin = obj[i].time;
+                            }
+                            if (tmmax < obj[i].time) {
+                                tmmax = obj[i].time;
+                            }
+
+                            if (thNames.indexOf(obj[i].thName) == -1) {
+                                thNames.push(obj[i].thName)
+                            }
+                            if (clNames.indexOf(obj[i].className) == -1) {
+                                clNames.push(obj[i].className);
+                                str[thclrind] = {};
+                                str[thclrind].clr = clzclrs[thclrind];
+                                str[thclrind].clzName = obj[i].className;
+                                str[thclrind].mtds = [{'name': obj[i].methodName}];
+                                thclrind++;
+                            } else {
+                                var ind = 0;
+                                while (str[ind].clzName != obj[i].className) {
+                                    ind++
+                                }
+                                var mind = 0;
+                                while (mind < str[ind].mtds.length && str[ind].mtds[mind].name != obj[i].methodName) {
+                                    mind++
+                                }
+                                if (str[ind].mtds.length == mind) {
+                                    str[ind].mtds.push({'name': obj[i].methodName});
+                                }
+                            }
+                            i++;
                         }
-                        if (clNames.indexOf(obj[i].className) == -1) {
-                            clNames.push(obj[i].className)
+
+                        var gap = 0;
+                        if (clNames.length > 0) {
+                            gap = (w - thGap) / (clNames.length + 1);
                         }
-                        if (!(obj[i].className in a)) {
-                            a[obj[i].className] = [];
+
+                        i = 0;
+                        while (i < str.length) {
+                            str[i].prX = thGap + gap * i;
+                            str[i].lstX = thGap + gap * (i + 1) - 15;
+                            i++;
                         }
-                        if (a[obj[i].className].indexOf(obj[i].methodName) == -1) {
-                            a[obj[i].className].push(obj[i].methodName);
-                        }
-                        i++;
+
+                        redraw(str, obj, tmmin, tmmax);
                     }
-                    redraw(clNames, a);
                 }, true
             );
 
-            function redraw(clNames, a) {
+            function redraw(str, obj, tmmin, tmmax) {
                 //clearup
-                ctx.clearRect(0, 0, h, w);
+                ctx.clearRect(0, 0, w, h);
 
-                draw(threadSrcW, gap, threadSrcW, h - gap, threadSrcClr);
+                var str2 = drawclzz(str);
+                drawTime(obj, str2, tmmin, tmmax);
+            }
 
-                var gaplines = 0;
-                if (clNames.length > 0) {
-                    gaplines = ((w - gap) / clNames.length);
-                }
-                var lineBlk = gaplines * 4 / 5;
+
+            function drawclzz(str) {
                 var i = 0;
-                var currentLinePos = threadSrcW + gap / 2;
-
-                while (i < clNames.length) {
-
-                    drawText(clNames[i], currentLinePos, gap - 14);
-                    draw(currentLinePos, gap, currentLinePos + lineBlk, gap, blocksClrs[i]);
+                var upperGap = 30;
+                while (i < str.length) {
+                    drawTxt(str[i].prX, 10, str[i].clzName);
+                    draw(str[i].prX, upperGap, str[i].lstX, upperGap, str[i].clr);
                     var j = 0;
-                    var x = 0;
-                    while (j < a[clNames[i]].length) {
-                        drawText(a[clNames[i]][j], currentLinePos + x - 5, gap-2);
-                        draw(currentLinePos + x, gap, currentLinePos + x, h - gap, blocksClrs[i]);
-                        x += 40;
+                    var mgap = (str[i].lstX - str[i].prX) / str[i].mtds.length;
+                    while (j < str[i].mtds.length) {
+                        str[i].mtds[j].posX = str[i].prX + mgap * j;
+                        drawTxt(str[i].mtds[j].posX, 20, str[i].mtds[j].name);
+                        draw(str[i].mtds[j].posX, upperGap, str[i].mtds[j].posX, h, str[i].clr);
                         j++;
                     }
-                    currentLinePos += gaplines;
                     i++;
                 }
+                return str;
             }
 
-            function drawText(text, lX, lY) {
+            function drawTime(obj, str, tmmin, tmmax) {
+                var upperGap = 40;
+                var timeitem = (tmmax - tmmin) / h;
+                if (timeitem < 15) {
+                    timeitem = 15;
+                }
+
+                var i = 0;
+                while (i < obj.length) {
+
+                    var currtime = (obj[i].time - tmmin) * timeitem;
+                    var ind = 0;
+                    while (str[ind].clzName != obj[i].className) {
+                        ind++
+                    }
+                    var mind = 0;
+                    while (str[ind].mtds[mind].name != obj[i].methodName) {
+                        mind++
+                    }
+
+                    drawHorixontalCurve(thGap / 2, upperGap + currtime, str[ind].mtds[mind].posX, upperGap + currtime, thclr, obj[i].start);
+                    i++;
+
+                }
+                draw(thGap / 2, 0, thGap / 2, h, thclr);
+            }
+
+
+            function drawTxt(lx, ly, text) {
                 ctx.font = "10px Arial";
-                ctx.fillText(text, lX, lY);
+                ctx.fillText(text, lx, ly);
             }
 
-            function draw(lX, lY, cX, cY, color) {
+            function drawHorixontalCurve(lX, lY, cX, cY, clr, up) {
+                ctx.beginPath();
+                // line from
+                ctx.moveTo(lX, lY);
+                // to
+                var crv = 0;
+                if(up){
+                    crv = 10;
+                }else{
+                    crv = -10;
+                }
+                ctx.bezierCurveTo(lX, lY + crv, cX, lY + crv, cX, cY);
+                // color
+                ctx.strokeStyle = clr;
+                // draw it
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            function draw(lX, lY, cX, cY, clr) {
                 ctx.beginPath();
                 // line from
                 ctx.moveTo(lX, lY);
                 // to
                 ctx.lineTo(cX, cY);
                 // color
-                ctx.strokeStyle = color;
+                ctx.strokeStyle = clr;
                 // draw it
                 ctx.stroke();
                 ctx.closePath();

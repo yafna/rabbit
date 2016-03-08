@@ -61,9 +61,6 @@ angular.module('myApp.interactive', ['ngRoute'])
             var w = 700;
             var h = 700;
             var thGap = 20;
-            var thclr = '#ff0000';
-            var fadedClr ='#e6ffe6';
-            var timeClr = '#c2d6d6';
             var clzclrs = ['#206020', '#336600', '#446600', '#008000', '#006633', '#004d00', '#009900'];
             var ctx = element[0].getContext('2d');
             element[0].setAttribute('width', w);
@@ -127,125 +124,10 @@ angular.module('myApp.interactive', ['ngRoute'])
                             str[i].lstX = thGap + gap * (i + 1) - 15;
                             i++;
                         }
-                        redraw(str, obj, tmmin, tmmax);
+                        drawItems.redraw(ctx, str, obj, tmmin, tmmax, w, h);
                     }
                 }, true
             );
-
-            function redraw(str, obj, tmmin, tmmax) {
-                ctx.clearRect(0, 0, w, h);
-                var str2 = drawclzz(str);
-                drawTime(tmmin, tmmax);
-                drawThreads(obj, str2, tmmin, tmmax);
-            }
-
-
-            function drawclzz(str) {
-                var i = 0;
-                var upperGap = 30;
-                while (i < str.length) {
-                    var mgap = (str[i].lstX - str[i].prX) / str[i].mtds.length;
-                    drawTxt(str[i].prX, 10, str[i].clzName);
-                    draw(str[i].prX, upperGap, str[i].lstX - mgap + 1, upperGap, str[i].clr);
-                    drawRect(str[i].prX, upperGap, str[i].lstX - mgap + 1, h, fadedClr);
-                    var j = 0;
-                    while (j < str[i].mtds.length) {
-                        str[i].mtds[j].posX = str[i].prX + mgap * j;
-                        drawTxt(str[i].mtds[j].posX, 20, str[i].mtds[j].name);
-                        draw(str[i].mtds[j].posX, upperGap, str[i].mtds[j].posX, h, str[i].clr);
-                        j++;
-                    }
-                    i++;
-                }
-                return str;
-            }
-
-            function drawThreads(obj, str, tmmin, tmmax){
-                var upperGap = 40;
-                var timeitem = (h - upperGap - 10) / (tmmax - tmmin);
-                var i = 0;
-                while (i < obj.length) {
-                    var currtime = (obj[i].time - tmmin) * timeitem;
-                    var ind = 0;
-                    while (str[ind].clzName != obj[i].className) {
-                        ind++
-                    }
-                    var mind = 0;
-                    while (str[ind].mtds[mind].name != obj[i].methodName) {
-                        mind++
-                    }
-                    drawHorixontalCurve(thGap / 2, upperGap + currtime, str[ind].mtds[mind].posX, upperGap + currtime, thclr, obj[i].start);
-                    i++;
-                }
-                draw(thGap / 2, 0, thGap / 2, h, thclr);
-            }
-
-            function drawTime(tmmin, tmmax) {
-                var upperGap = 40;
-                var timeitem = (h - upperGap - 10) / (tmmax - tmmin);
-                var i = 0;
-                var delimiters = tmmax - tmmin > 7? 7 : tmmax - tmmin;
-                var tmItem = tmmin;
-                while (i < delimiters) {
-                    var currtime = upperGap + (tmItem == tmmin ? 0 : (tmItem - tmmin) * timeitem);
-                    drawTxt(thGap / 2, currtime - 5, wraptime(tmItem));
-                    draw(thGap / 2, currtime, w, currtime, timeClr);
-                    i++;
-                    if(i == delimiters-1){
-                        tmItem = tmmax;
-                    }else{
-                        tmItem += i* ((tmmax - tmmin) / delimiters);
-                    }
-                }
-                draw(thGap / 2, 0, thGap / 2, h, thclr);
-            }
-
-
-            function drawTxt(lx, ly, text) {
-                ctx.font = "10px Arial";
-                ctx.fillStyle = '#000000';
-                ctx.fillText(text, lx, ly);
-            }
-
-            function drawHorixontalCurve(lX, lY, cX, cY, clr, up) {
-                ctx.beginPath();
-                ctx.moveTo(lX, lY);
-                var crv = 5 * (up ? -1 : 1);
-                ctx.bezierCurveTo(lX, lY + crv, cX, lY + crv, cX, cY);
-                ctx.strokeStyle = clr;
-                ctx.stroke();
-                ctx.closePath();
-            }
-
-            function draw(lX, lY, cX, cY, clr) {
-                ctx.beginPath();
-                ctx.moveTo(lX, lY);
-                ctx.lineTo(cX, cY);
-                ctx.strokeStyle = clr;
-                ctx.stroke();
-                ctx.closePath();
-            }
-
-            function drawRect(lX, lY, cX, cY, clr) {
-                ctx.beginPath();
-                ctx.rect(lX, lY, cX-lX, cY-lY);
-                ctx.fillStyle = clr;
-                ctx.fill();
-                ctx.closePath();
-            }
-
-            function wraptime(millis) {
-                var today = new Date(millis),
-                    h = checkTime(today.getHours()),
-                    m = checkTime(today.getMinutes()),
-                    s = checkTime(today.getSeconds()),
-                    mm = checkTime(today.getMilliseconds());
-                return h + ":" + m + ":" + s + "." + mm;
-            }
-
-            function checkTime(i) {
-                return (i < 10) ? "0" + i : i;
-            }
         };
 
         return dir;

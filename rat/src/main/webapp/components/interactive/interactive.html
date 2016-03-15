@@ -13,7 +13,11 @@
 
     <div class="row">
         <div class="col-md-12">
-            <canvas drawing mtds="mtds"></canvas>
+            <canvas drawing mtds="mtds" zoommode="zoommode">
+                <div id="zoomlayer" ng-show="zoommode">
+
+                </div>
+            </canvas>
         </div>
         <div class="col-md-12">
             <table class="col-md-12 table table-striped upper-gap">

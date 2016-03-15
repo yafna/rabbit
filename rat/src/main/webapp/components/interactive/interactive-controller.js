@@ -70,7 +70,8 @@ angular.module('myApp.interactive', ['ngRoute'])
         var dir = {};
         dir.restrict = "AEC";
         dir.scope = {
-            mtds: '='
+            mtds: '=',
+            zoommode: '='
         };
         dir.link = function (scope, element) {
             var w = 700;
@@ -78,8 +79,19 @@ angular.module('myApp.interactive', ['ngRoute'])
             var thGap = 20;
             var clzclrs = ['#206020', '#336600', '#446600', '#008000', '#006633', '#004d00', '#009900'];
             var ctx = element[0].getContext('2d');
+            var ctxZoom = document.getElementById('zoomlayer');
+
             element[0].setAttribute('width', w);
             element[0].setAttribute('height', h);
+            scope.$watch(
+                function () {
+                    return scope.zoommode;
+                },
+                function () {
+                    console.log("I see a zoommode change!");
+
+                }
+            );
             scope.$watch(
                 function () {
                     return scope.mtds;

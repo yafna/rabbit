@@ -1,3 +1,4 @@
+'use strict';
 (function (drawItems, $, undefined) {
     var w, h;
     var thclr = '#ff0000';
@@ -49,7 +50,7 @@
             while (str[ind].mtds[mind].name != obj[i].methodName) {
                 mind++
             }
-            drawAction.drawHorixontalCurve(ctx, thGap / 2, upperGap + currtime, str[ind].mtds[mind].posX, upperGap + currtime, thclr, obj[i].start);
+            drawAction.drawHorizontalCurve(ctx, thGap / 2, upperGap + currtime, str[ind].mtds[mind].posX, upperGap + currtime, thclr, obj[i].start);
             i++;
         }
         draw(ctx, thGap / 2, 0, thGap / 2, h, thclr);

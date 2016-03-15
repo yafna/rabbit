@@ -1,3 +1,4 @@
+'use strict';
 (function(drawAction, $, undefined ) {
     drawAction.drawTxt = function (ctx, lx, ly, text) {
         ctx.font = "10px Arial";
@@ -5,7 +6,7 @@
         ctx.fillText(text, lx, ly);
     };
 
-    drawAction.drawHorixontalCurve = function (ctx, lX, lY, cX, cY, clr, up) {
+    drawAction.drawHorizontalCurve = function (ctx, lX, lY, cX, cY, clr, up) {
         ctx.beginPath();
         ctx.moveTo(lX, lY);
         var crv = 5 * (up ? -1 : 1);

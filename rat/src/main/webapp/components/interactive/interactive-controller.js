@@ -7,13 +7,28 @@ angular.module('myApp.interactive', ['ngRoute'])
             controller: 'InteractiveCtrl'
         });
     }])
-    .controller('InteractiveCtrl', ['$scope', '$http', '$interval',function ($scope, $http, $interval) {
+    .controller('InteractiveCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
         var self = this;
         $scope.mtds = [];
+        $scope.zoommode =  false;
+        var backupMtds;
         var stop;
-        self.startTimer = function() {
-            if ( angular.isDefined(stop) ) return;
-            stop = $interval(function() {
+
+        self.modeChanged = function(){
+            //stop timer , zoooom
+            if($scope.zoommode){
+                self.stopTimer();
+                backupMtds = $scope.mtds;
+            }
+        };
+
+        self.zoomBack = function () {
+            $scope.mtds = backupMtds;
+        };
+
+        self.startTimer = function () {
+            if (angular.isDefined(stop)) return;
+            stop = $interval(function () {
                 getData().then(
                     function (resp) {
                         if (self.mtds === undefined) {
@@ -27,7 +42,7 @@ angular.module('myApp.interactive', ['ngRoute'])
                 );
             }, 500);
         };
-        self.stopTimer = function() {
+        self.stopTimer = function () {
             if (angular.isDefined(stop)) {
                 $interval.cancel(stop);
                 stop = undefined;
@@ -35,7 +50,7 @@ angular.module('myApp.interactive', ['ngRoute'])
         };
 
         self.getPack = function () {
-            if (! angular.isDefined(stop) ) return;
+            if (angular.isDefined(stop)) return;
             getData().then(
                 function (resp) {
                     if (self.mtds === undefined) {

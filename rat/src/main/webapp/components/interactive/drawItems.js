@@ -53,7 +53,7 @@
             drawAction.drawHorizontalCurve(ctx, thGap / 2, upperGap + currtime, str[ind].mtds[mind].posX, upperGap + currtime, thclr, obj[i].start);
             i++;
         }
-        draw(ctx, thGap / 2, 0, thGap / 2, h, thclr);
+        drawAction.draw(ctx, thGap / 2, 0, thGap / 2, h, thclr);
     }
 
     function drawTime(ctx, tmmin, tmmax) {

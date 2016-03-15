@@ -1,9 +1,14 @@
 <div class="col-md-12 upper-gap" ng-controller="InteractiveCtrl as actrl">
     <div class="row">
-        <button ng-click="actrl.getPack()" type="button" class="btn btn-primary">get single pack</button>
+        <button ng-click="actrl.getPack()" type="button" class="btn btn-primary" ng-disabled="zoommode">get single pack</button>
 
-        <button ng-click="actrl.startTimer()" type="button" class="btn btn-primary">startTimer</button>
-        <button ng-click="actrl.stopTimer()" type="button" class="btn btn-primary">stopTimer</button>
+        <button ng-click="actrl.startTimer()" type="button" class="btn btn-primary"  ng-disabled="zoommode">startTimer</button>
+        <button ng-click="actrl.stopTimer()" type="button" class="btn btn-primary"  ng-disabled="zoommode">stopTimer</button>
+
+        <label class="col-md-offset-1">Zoom mode:
+            <input type="checkbox" ng-model="zoommode" ng-change="actrl.modeChanged()">
+        </label>
+        <button ng-click="actrl.zoomBack()" type="button" class="btn btn-primary" ng-disabled="!zoommode">zoomBack</button>
     </div>
 
     <div class="row">

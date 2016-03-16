@@ -76,8 +76,6 @@ angular.module('myApp.interactive', ['ngRoute'])
         dir.link = function (scope, element) {
             var w = 700;
             var h = 700;
-            var thGap = 20;
-            var clzclrs = ['#206020', '#336600', '#446600', '#008000', '#006633', '#004d00', '#009900'];
             var ctx = element[0].getContext('2d');
             element[0].setAttribute('width', w);
             element[0].setAttribute('height', h);
@@ -100,58 +98,10 @@ angular.module('myApp.interactive', ['ngRoute'])
                 function (obj) {
                     console.log("I see a data change!");
                     if (obj != undefined && obj[0] != undefined) {
-                        var i = 0;
-                        var str = [];
-                        var thNames = [];
-                        var clNames = [];
-                        var thclrind = 0;
-                        var tmmin = obj[0].time;
-                        var tmmax = obj[0].time;
-                        while (i < obj.length) {
-                            if (tmmin > obj[i].time) {
-                                tmmin = obj[i].time;
-                            }
-                            if (tmmax < obj[i].time) {
-                                tmmax = obj[i].time;
-                            }
-
-                            if (thNames.indexOf(obj[i].thName) == -1) {
-                                thNames.push(obj[i].thName)
-                            }
-                            if (clNames.indexOf(obj[i].className) == -1) {
-                                clNames.push(obj[i].className);
-                                str[thclrind] = {};
-                                str[thclrind].clr = clzclrs[thclrind];
-                                str[thclrind].clzName = obj[i].className;
-                                str[thclrind].mtds = [{'name': obj[i].methodName}];
-                                thclrind++;
-                            } else {
-                                var ind = 0;
-                                while (str[ind].clzName != obj[i].className) {
-                                    ind++
-                                }
-                                var mind = 0;
-                                while (mind < str[ind].mtds.length && str[ind].mtds[mind].name != obj[i].methodName) {
-                                    mind++
-                                }
-                                if (str[ind].mtds.length == mind) {
-                                    str[ind].mtds.push({'name': obj[i].methodName});
-                                }
-                            }
-                            i++;
-                        }
-
-                        var gap = 0;
-                        if (clNames.length > 0) {
-                            gap = (w - thGap) / (clNames.length + 1);
-                        }
-
-                        i = 0;
-                        while (i < str.length) {
-                            str[i].prX = thGap + gap * i;
-                            str[i].lstX = thGap + gap * (i + 1) - 15;
-                            i++;
-                        }
+                        var str = models.buildClassStructure(obj);
+                        str = models.buildXIndex(w, str);
+                        var tmmin = models.getTimeMin(obj);
+                        var tmmax = models.getTimeMax(obj);
                         drawItems.redraw(ctx, str, obj, tmmin, tmmax, w, h);
                     }
                 }, true

@@ -22,11 +22,12 @@
         str = models.recalculateX(str, w, startX < endX ? startX : endX, startX > endX ? startX : endX);
         var tmmin = models.getTimeMin(obj);
         var tmmax = models.getTimeMax(obj);
+        var threads = models.buildThreads(obj, str, tmmin, tmmax, h);
         state.visibleStr = str;
 
         drawclzz(ctx, str);
         drawTime(ctx, tmmin, tmmax);
-        drawThreads(ctx, obj, str, tmmin, tmmax);
+        drawThreads(ctx, threads);
     };
 
     drawItems.redrawByTimer = function () {
@@ -36,11 +37,12 @@
         str = models.buildXIndex(w, str);
         var tmmin = models.getTimeMin(obj);
         var tmmax = models.getTimeMax(obj);
+        var threads = models.buildThreads(obj, str, tmmin, tmmax, h);
         state.visibleStr = str;
 
         drawclzz(ctx, str);
         drawTime(ctx, tmmin, tmmax);
-        drawThreads(ctx, obj, str, tmmin, tmmax);
+        drawThreads(ctx, threads);
     };
 
 
@@ -62,22 +64,12 @@
         return str;
     }
 
-    function drawThreads(ctx, obj, str, tmmin, tmmax) {
-        var upperGap = 40;
-        var timeitem = (h - upperGap - 10) / (tmmax - tmmin);
+    function drawThreads(ctx, threads) {
         var i = 0;
-        while (i < obj.length) {
-            var currtime = (obj[i].time - tmmin) * timeitem;
-            var ind = models.findIndByClazzName(str, obj[i].className);
-            if (ind != -1) {
-                var mind = models.findIndByMethodName(str[ind].mtds, obj[i].methodName);
-                if (mind != -1) {
-                    drawAction.drawHorizontalCurve(ctx, thGap / 2, upperGap + currtime, str[ind].mtds[mind].posX, upperGap + currtime, thclr, obj[i].start);
-                }
-            }
+        while (i < threads.length) {
+            drawAction.drawHorizontalCurve(ctx, thGap / 2, threads[i].y, threads[i].xend, threads[i].y, thclr, threads[i].start);
             i++;
         }
-        drawAction.draw(ctx, thGap / 2, 0, thGap / 2, h, thclr);
     }
 
     function drawTime(ctx, tmmin, tmmax) {

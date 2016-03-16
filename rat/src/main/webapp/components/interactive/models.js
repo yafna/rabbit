@@ -45,6 +45,30 @@
         return tmmax;
     };
 
+    models.buildThreads = function(obj, str, tmmin, tmmax, h){
+        var upperGap = 40;
+        var timeitem = (h - upperGap - 10) / (tmmax - tmmin);
+        var i = 0, thInd = 0;
+        var threads = [];
+        while (i < obj.length) {
+            var currtime = (obj[i].time - tmmin) * timeitem;
+            var ind = models.findIndByClazzName(str, obj[i].className);
+            if (ind != -1) {
+                var mind = models.findIndByMethodName(str[ind].mtds, obj[i].methodName);
+                if (mind != -1) {
+                    threads[thInd] = {};
+                    threads[thInd].name = obj[i].thName;
+                    threads[thInd].xend = str[ind].mtds[mind].posX;
+                    threads[thInd].y = upperGap + currtime;
+                    threads[thInd].start = obj[i].start;
+                    threads[thInd].time = obj[i].time;
+                    thInd++;
+                }
+            }
+            i++;
+        }
+        return threads;
+    };
     //var str = {
     //    clr: '',            color
     //    clzName : '',       classname

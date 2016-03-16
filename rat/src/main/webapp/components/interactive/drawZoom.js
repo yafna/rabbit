@@ -32,6 +32,9 @@
         if (zoomModeEnabled && zoomState.selecting) {
             zoomState.selecting = false;
             ctxZoom.clearRect(0, 0, w, h);
+            if (zoomState.startX - zoomState.endX != 0) {
+                drawItems.redrawByZoom(zoomState.startX, zoomState.startY, zoomState.endX, zoomState.endY);
+            }
         }
     }
 

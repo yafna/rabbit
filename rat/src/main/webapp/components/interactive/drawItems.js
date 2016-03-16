@@ -1,18 +1,46 @@
 'use strict';
 (function (drawItems, $, undefined) {
-    var w, h;
+    var ctx, w, h;
     var thclr = '#ff0000';
     var fadedClr = '#e6ffe6';
     var timeClr = '#c2d6d6';
     var thGap = 20;
+    var visibleStr;  //state
 
-    drawItems.redraw = function (ctx, str, obj, tmmin, tmmax, ww, hh) {
-        w = ww;
-        h = hh;
+    drawItems.init = function (zmEl, width, height) {
+        ctx = zmEl.getContext('2d');
+        w = width;
+        h = height;
+        zmEl.setAttribute('width', w);
+        zmEl.setAttribute('height', h);
+    };
+
+    drawItems.redrawByZoom = function (startX, startY, endX, endY) {
+        var obj = state.rawData;
         ctx.clearRect(0, 0, w, h);
-        var str2 = drawclzz(ctx, str);
+        var str = models.getClassStructure(state.visibleStr, startX < endX ? startX : endX, startX > endX ? startX : endX);
+        str = models.recalculateX(str, w, startX < endX ? startX : endX, startX > endX ? startX : endX);
+        var tmmin = models.getTimeMin(obj);
+        var tmmax = models.getTimeMax(obj);
+        state.visibleStr = str;
+
+        drawclzz(ctx, str);
         drawTime(ctx, tmmin, tmmax);
-        drawThreads(ctx, obj, str2, tmmin, tmmax);
+        drawThreads(ctx, obj, str, tmmin, tmmax);
+    };
+
+    drawItems.redrawByTimer = function () {
+        var obj = state.rawData;
+        ctx.clearRect(0, 0, w, h);
+        var str = models.buildClassStructure(obj);
+        str = models.buildXIndex(w, str);
+        var tmmin = models.getTimeMin(obj);
+        var tmmax = models.getTimeMax(obj);
+        state.visibleStr = str;
+
+        drawclzz(ctx, str);
+        drawTime(ctx, tmmin, tmmax);
+        drawThreads(ctx, obj, str, tmmin, tmmax);
     };
 
 
@@ -20,13 +48,11 @@
         var i = 0;
         var upperGap = 30;
         while (i < str.length) {
-            var mgap = (str[i].lstX - str[i].prX) / str[i].mtds.length;
             drawAction.drawTxt(ctx, str[i].prX, 10, str[i].clzName);
-            drawAction.draw(ctx, str[i].prX, upperGap, str[i].lstX - mgap + 1, upperGap, str[i].clr);
-            drawAction.drawRect(ctx, str[i].prX, upperGap, str[i].lstX - mgap + 1, h, fadedClr);
+            drawAction.draw(ctx, str[i].prX, upperGap, str[i].lstX, upperGap, str[i].clr);
+            drawAction.drawRect(ctx, str[i].prX, upperGap, str[i].lstX, h, fadedClr);
             var j = 0;
             while (j < str[i].mtds.length) {
-                str[i].mtds[j].posX = str[i].prX + mgap * j;
                 drawAction.drawTxt(ctx, str[i].mtds[j].posX, 20, str[i].mtds[j].name);
                 drawAction.draw(ctx, str[i].mtds[j].posX, upperGap, str[i].mtds[j].posX, h, str[i].clr);
                 j++;
@@ -42,15 +68,13 @@
         var i = 0;
         while (i < obj.length) {
             var currtime = (obj[i].time - tmmin) * timeitem;
-            var ind = 0;
-            while (str[ind].clzName != obj[i].className) {
-                ind++
+            var ind = models.findIndByClazzName(str, obj[i].className);
+            if (ind != -1) {
+                var mind = models.findIndByMethodName(str[ind].mtds, obj[i].methodName);
+                if (mind != -1) {
+                    drawAction.drawHorizontalCurve(ctx, thGap / 2, upperGap + currtime, str[ind].mtds[mind].posX, upperGap + currtime, thclr, obj[i].start);
+                }
             }
-            var mind = 0;
-            while (str[ind].mtds[mind].name != obj[i].methodName) {
-                mind++
-            }
-            drawAction.drawHorizontalCurve(ctx, thGap / 2, upperGap + currtime, str[ind].mtds[mind].posX, upperGap + currtime, thclr, obj[i].start);
             i++;
         }
         drawAction.draw(ctx, thGap / 2, 0, thGap / 2, h, thclr);

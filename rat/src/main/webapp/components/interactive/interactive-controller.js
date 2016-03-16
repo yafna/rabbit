@@ -11,19 +11,17 @@ angular.module('myApp.interactive', ['ngRoute'])
         var self = this;
         $scope.mtds = [];
         $scope.zoommode = false;
-        var backupMtds;
         var stop;
 
         self.modeChanged = function () {
             //stop timer , zoooom
             if ($scope.zoommode) {
                 self.stopTimer();
-                backupMtds = $scope.mtds;
             }
         };
 
         self.zoomBack = function () {
-            $scope.mtds = backupMtds;
+            drawItems.redrawByTimer();
         };
 
         self.startTimer = function () {
@@ -76,11 +74,8 @@ angular.module('myApp.interactive', ['ngRoute'])
         dir.link = function (scope, element) {
             var w = 700;
             var h = 700;
-            var ctx = element[0].getContext('2d');
-            element[0].setAttribute('width', w);
-            element[0].setAttribute('height', h);
             drawZoom.init(document.getElementById('zoomlayer'), w, h);
-
+            drawItems.init(element[0], w, h);
             scope.$watch(
                 function () {
                     return scope.zoommode;
@@ -98,11 +93,8 @@ angular.module('myApp.interactive', ['ngRoute'])
                 function (obj) {
                     console.log("I see a data change!");
                     if (obj != undefined && obj[0] != undefined) {
-                        var str = models.buildClassStructure(obj);
-                        str = models.buildXIndex(w, str);
-                        var tmmin = models.getTimeMin(obj);
-                        var tmmax = models.getTimeMax(obj);
-                        drawItems.redraw(ctx, str, obj, tmmin, tmmax, w, h);
+                        state.rawData = obj;
+                        drawItems.redrawByTimer();
                     }
                 }, true
             );

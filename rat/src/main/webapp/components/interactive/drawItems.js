@@ -20,14 +20,19 @@
         ctx.clearRect(0, 0, w, h);
         var str = models.getClassStructure(state.visibleStr, startX < endX ? startX : endX, startX > endX ? startX : endX);
         str = models.recalculateX(str, w, startX < endX ? startX : endX, startX > endX ? startX : endX);
-        var tmmin = models.getTimeMin(obj);
-        var tmmax = models.getTimeMax(obj);
-        var threads = models.buildThreads(obj, str, tmmin, tmmax, h);
         state.visibleStr = str;
-
         drawclzz(ctx, str);
-        drawTime(ctx, tmmin, tmmax);
-        drawThreads(ctx, threads);
+
+        var threads = models.filterThreads(state.visibleThrs, startY, endY);
+        if (threads.length != 0) {
+            threads = models.updateThreadX(threads, str);
+            var tme = models.getTimeBorders(threads);
+            threads = models.setThreadY(threads, tme.tmin, tme.tmax, h);
+            state.visibleThrs = threads;
+
+            drawTime(ctx, tme.tmin, tme.tmax);
+            drawThreads(ctx, threads);
+        }
     };
 
     drawItems.redrawByTimer = function () {
@@ -35,13 +40,14 @@
         ctx.clearRect(0, 0, w, h);
         var str = models.buildClassStructure(obj);
         str = models.buildXIndex(w, str);
-        var tmmin = models.getTimeMin(obj);
-        var tmmax = models.getTimeMax(obj);
-        var threads = models.buildThreads(obj, str, tmmin, tmmax, h);
+        var threads = models.buildThreads(obj, str);
+        var tme = models.getTimeBorders(threads);
+        threads = models.setThreadY(threads, tme.tmin, tme.tmax, h);
         state.visibleStr = str;
+        state.visibleThrs = threads;
 
         drawclzz(ctx, str);
-        drawTime(ctx, tmmin, tmmax);
+        drawTime(ctx, tme.tmin, tme.tmax);
         drawThreads(ctx, threads);
     };
 

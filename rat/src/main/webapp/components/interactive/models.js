@@ -5,7 +5,7 @@
     var clzclrs = ['#206020', '#336600', '#446600', '#008000', '#006633', '#004d00', '#009900'];
 
     //-1 if nothing found
-    models.findIndByMethodName = function(mtds, name) {
+    models.findIndByMethodName = function (mtds, name) {
         var mind = 0;
         while (mind < mtds.length && mtds[mind].name != name) {
             mind++
@@ -14,7 +14,7 @@
     };
 
     //-1 if nothing found
-    models.findIndByClazzName = function(str, name) {
+    models.findIndByClazzName = function (str, name) {
         var ind = 0;
         while (ind < str.length && str[ind].clzName != name) {
             ind++
@@ -22,36 +22,63 @@
         return (str.length == ind) ? -1 : ind
     };
 
-    models.getTimeMin = function (obj) {
+    models.getTimeBorders = function (trds) {
         var i = 0;
-        var tmmin = obj[0].time;
-        while (i < obj.length) {
-            if (tmmin > obj[i].time) {
-                tmmin = obj[i].time;
+        var tmmin = trds[0].time;
+        var tmmax = trds[0].time;
+        while (i < trds.length) {
+            if (tmmin > trds[i].time) {
+                tmmin = trds[i].time;
+            }
+            if (tmmax < trds[i].time) {
+                tmmax = trds[i].time;
             }
             i++;
         }
-        return tmmin;
-    };
-    models.getTimeMax = function (obj) {
-        var i = 0;
-        var tmmax = obj[0].time;
-        while (i < obj.length) {
-            if (tmmax < obj[i].time) {
-                tmmax = obj[i].time;
-            }
-            i++;
-        }
-        return tmmax;
+        return {tmin: tmmin, tmax: tmmax};
     };
 
-    models.buildThreads = function(obj, str, tmmin, tmmax, h){
+    models.filterThreads = function (thrs, startY, endY) {
+        var i = 0;
+        var threads = [];
+        while (i < thrs.length) {
+            if (thrs[i].y > startY && thrs[i].y < endY) {
+                threads.push(thrs[i]);
+            }
+            i++;
+        }
+        return threads;
+    };
+
+    models.updateThreadX = function (thrds, str) {
+        var i = 0;
+        while (i < thrds.length) {
+            var ind = models.findIndByClazzName(str, thrds[i].clzName);
+            if (ind != -1) {
+                var mind = models.findIndByMethodName(str[ind].mtds, thrds[i].mtdName);
+                thrds[i].xend = str[ind].mtds[mind].posX;
+            }
+            i++;
+        }
+        return thrds;
+    };
+
+    models.setThreadY = function (thrds, tmmin, tmmax, h) {
         var upperGap = 40;
         var timeitem = (h - upperGap - 10) / (tmmax - tmmin);
+        var i = 0;
+        while (i < thrds.length) {
+            var currtime = (thrds[i].time - tmmin) * timeitem;
+            thrds[i].y = upperGap + currtime;
+            i++;
+        }
+        return thrds;
+    };
+
+    models.buildThreads = function (obj, str) {
         var i = 0, thInd = 0;
         var threads = [];
         while (i < obj.length) {
-            var currtime = (obj[i].time - tmmin) * timeitem;
             var ind = models.findIndByClazzName(str, obj[i].className);
             if (ind != -1) {
                 var mind = models.findIndByMethodName(str[ind].mtds, obj[i].methodName);
@@ -59,9 +86,10 @@
                     threads[thInd] = {};
                     threads[thInd].name = obj[i].thName;
                     threads[thInd].xend = str[ind].mtds[mind].posX;
-                    threads[thInd].y = upperGap + currtime;
                     threads[thInd].start = obj[i].start;
                     threads[thInd].time = obj[i].time;
+                    threads[thInd].clzName = obj[i].className;
+                    threads[thInd].mtdName = obj[i].methodName;
                     thInd++;
                 }
             }

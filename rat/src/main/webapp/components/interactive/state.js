@@ -8,5 +8,6 @@
     //    endY: 0
     //};
     state.rawData = [];
-    state.visibleStr = {};
+    state.visibleStr = [];
+    state.visibleThrs = [];
 }(window.state = window.state || {}, jQuery ));

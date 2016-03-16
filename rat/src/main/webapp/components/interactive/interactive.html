@@ -12,11 +12,10 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12">
-            <canvas drawing mtds="mtds" zoommode="zoommode">
-                <div id="zoomlayer" ng-show="zoommode">
-
-                </div>
+        <div class="col-md-12" style="height: 1000px">
+            <canvas drawing mtds="mtds" zoommode="zoommode" style="position: absolute; left: 0; top: 0; z-index: 0;">
+            </canvas>
+            <canvas id="zoomlayer" ng-show="zoommode" style="position: absolute; left: 0; top: 0; z-index: 1;">
             </canvas>
         </div>
         <div class="col-md-12">

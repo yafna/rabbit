@@ -32,4 +32,11 @@
         ctx.fill();
         ctx.closePath();
     };
+
+    drawAction.drawEmptyRect = function (ctx, lX, lY, cX, cY, clr) {
+        ctx.beginPath();
+        ctx.strokeStyle = clr;
+        ctx.strokeRect(lX, lY, cX - lX, cY - lY);
+        ctx.closePath();
+    };
 }(window.drawAction = window.drawAction || {}, jQuery ));

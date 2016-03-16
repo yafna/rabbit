@@ -10,13 +10,13 @@ angular.module('myApp.interactive', ['ngRoute'])
     .controller('InteractiveCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
         var self = this;
         $scope.mtds = [];
-        $scope.zoommode =  false;
+        $scope.zoommode = false;
         var backupMtds;
         var stop;
 
-        self.modeChanged = function(){
+        self.modeChanged = function () {
             //stop timer , zoooom
-            if($scope.zoommode){
+            if ($scope.zoommode) {
                 self.stopTimer();
                 backupMtds = $scope.mtds;
             }
@@ -79,17 +79,64 @@ angular.module('myApp.interactive', ['ngRoute'])
             var thGap = 20;
             var clzclrs = ['#206020', '#336600', '#446600', '#008000', '#006633', '#004d00', '#009900'];
             var ctx = element[0].getContext('2d');
-            var ctxZoom = document.getElementById('zoomlayer');
+            var zoomEl = document.getElementById('zoomlayer');
+            var ctxZoom = zoomEl.getContext('2d');
+            var zoomModeEnabled = false;
+            var rect = zoomEl.getBoundingClientRect();
 
             element[0].setAttribute('width', w);
             element[0].setAttribute('height', h);
+            zoomEl.setAttribute('width', w);
+            zoomEl.setAttribute('height', h);
+
+
+            var zoomState = {
+                selecting: false,
+                startX: 0,
+                startY: 0,
+                endX: 0,
+                endY: 0
+            };
+
+           var onMouseDown = function(event) {
+                if (scope.zoommode) {
+                    zoomState.selecting = true;
+                    zoomState.startX = event.pageX - rect.left;
+                    zoomState.startY = event.pageY - rect.top;
+                }
+            };
+            var onMouseMove =  function(event) {
+                if (scope.zoommode && zoomState.selecting) {
+                    console.log('mv+');
+                    zoomState.endX = event.pageX - rect.left;
+                    zoomState.endY = event.pageY- rect.top;
+                    ctxZoom.clearRect(0, 0, w, h);
+                    drawAction.drawEmptyRect(ctxZoom, zoomState.startX, zoomState.startY, zoomState.endX, zoomState.endY);
+                }
+            };
+            var onMouseUp = function(event) {
+                if (scope.zoommode && zoomState.selecting) {
+                    console.log('up+');
+                    zoomState.selecting = false;
+                    ctxZoom.clearRect(0, 0, w, h);
+
+                }
+            };
+
+            zoomEl.addEventListener('mousemove', onMouseMove, true);
+            zoomEl.addEventListener('mousedown', onMouseDown, true);
+            zoomEl.addEventListener('mouseup', onMouseUp, true);
+            zoomEl.addEventListener('selectstart', function (e) {
+                e.preventDefault();
+                return false;
+            }, false);
             scope.$watch(
                 function () {
                     return scope.zoommode;
                 },
                 function () {
                     console.log("I see a zoommode change!");
-
+                    zoomModeEnabled = scope.zoommode;
                 }
             );
             scope.$watch(
@@ -99,6 +146,7 @@ angular.module('myApp.interactive', ['ngRoute'])
                 function (obj) {
                     console.log("I see a data change!");
                     if (obj != undefined && obj[0] != undefined) {
+                        ctxZoom.clearRect(0, 0, w, h);
                         var i = 0;
                         var str = [];
                         var thNames = [];

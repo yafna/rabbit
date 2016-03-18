@@ -25,8 +25,8 @@ public class MainView {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 400);
 
-        JLabel lblRabbits = new JLabel("Rabbit size : " + creatures.size());
-        JLabel lblCarrots = new JLabel("Carrots size : " + carrots.size());
+        final JLabel lblRabbits = new JLabel("Rabbit size : " + creatures.size());
+        final JLabel lblCarrots = new JLabel("Carrots size : " + carrots.size());
         JButton btnR = new JButton("More creatures");
         btnR.addActionListener(new ActionListener() {
             @Override

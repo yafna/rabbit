@@ -19,3 +19,11 @@ task runAppASM(type: JavaExec, group : 'exec') {
     main = 'forest.city.Main'
     jvmArgs=['-javaagent:sandbox/spyder.jar']
 }
+
+
+
+task runAppASMCopyright(type: JavaExec, group : 'exec') {
+    classpath = configurations.city + configurations.scheduleRuntimeAsm
+    main = 'forest.city.Main'
+    jvmArgs=['-javaagent:sandbox/license-instrumentation.jar']
+}

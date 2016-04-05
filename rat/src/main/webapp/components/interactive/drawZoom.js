@@ -33,7 +33,11 @@
             zoomState.selecting = false;
             ctxZoom.clearRect(0, 0, w, h);
             if (zoomState.startX - zoomState.endX != 0) {
-                drawItems.redrawByZoom(zoomState.startX, zoomState.startY, zoomState.endX, zoomState.endY);
+                var xMin = zoomState.startX < zoomState.endX ? zoomState.startX : zoomState.endX;
+                var xMax = zoomState.startX > zoomState.endX ? zoomState.startX : zoomState.endX;
+                var yMin = zoomState.startY < zoomState.endY ? zoomState.startY : zoomState.endY;
+                var yMax = zoomState.startY > zoomState.endY ? zoomState.startY : zoomState.endY;
+                drawItems.redrawByZoom(xMin, yMin, xMax, yMax);
             }
         }
     }

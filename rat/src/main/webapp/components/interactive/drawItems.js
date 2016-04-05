@@ -5,6 +5,8 @@
     var fadedClr = '#e6ffe6';
     var timeClr = '#c2d6d6';
     var thGap = 20;
+    var upperGapClz = 30;
+    var upperGapTime = 40;
     var visibleStr;  //state
 
     drawItems.init = function (zmEl, width, height) {
@@ -23,7 +25,7 @@
         state.visibleStr = str;
         drawclzz(ctx, str);
 
-        var threads = models.filterThreads(state.visibleThrs, startY, endY);
+        var threads = models.filterThreads(state.visibleThrs, startY, endY, startX, endX);
         if (threads.length != 0) {
             threads = models.updateThreadX(threads, str);
             var tme = models.getTimeBorders(threads);
@@ -54,15 +56,14 @@
 
     function drawclzz(ctx, str) {
         var i = 0;
-        var upperGap = 30;
         while (i < str.length) {
             drawAction.drawTxt(ctx, str[i].prX, 10, str[i].clzName);
-            drawAction.draw(ctx, str[i].prX, upperGap, str[i].lstX, upperGap, str[i].clr);
-            drawAction.drawRect(ctx, str[i].prX, upperGap, str[i].lstX, h, fadedClr);
+            drawAction.draw(ctx, str[i].prX, upperGapClz, str[i].lstX, upperGapClz, str[i].clr);
+            drawAction.drawRect(ctx, str[i].prX, upperGapClz, str[i].lstX, h, fadedClr);
             var j = 0;
             while (j < str[i].mtds.length) {
                 drawAction.drawTxt(ctx, str[i].mtds[j].posX, 20, str[i].mtds[j].name);
-                drawAction.draw(ctx, str[i].mtds[j].posX, upperGap, str[i].mtds[j].posX, h, str[i].clr);
+                drawAction.draw(ctx, str[i].mtds[j].posX, upperGapClz, str[i].mtds[j].posX, h, str[i].clr);
                 j++;
             }
             i++;
@@ -73,19 +74,31 @@
     function drawThreads(ctx, threads) {
         var i = 0;
         while (i < threads.length) {
-            drawAction.drawHorizontalCurve(ctx, thGap / 2, threads[i].y, threads[i].xend, threads[i].y, thclr, threads[i].start);
+            var startT, endT;
+            if (threads[i].sy == undefined) {
+                startT = upperGapTime;
+            } else {
+                startT = threads[i].sy;
+                drawAction.drawHorizontalCurve(ctx, thGap / 2, threads[i].sy, threads[i].xend, threads[i].sy, thclr, true);
+            }
+            if (threads[i].ey == undefined) {
+                endT = h;
+            } else {
+                endT = threads[i].ey;
+                drawAction.drawHorizontalCurve(ctx, thGap / 2, threads[i].ey, threads[i].xend, threads[i].ey, thclr, false);
+            }
+            drawAction.draw(ctx, threads[i].xend, startT, threads[i].xend, endT, thclr);
             i++;
         }
     }
 
     function drawTime(ctx, tmmin, tmmax) {
-        var upperGap = 40;
-        var timeitem = (h - upperGap - 10) / (tmmax - tmmin);
+        var timeitem = (h - upperGapTime - 10) / (tmmax - tmmin);
         var i = 0;
         var delimiters = tmmax - tmmin > 7 ? 7 : tmmax - tmmin;
         var tmItem = tmmin;
         while (i < delimiters) {
-            var currtime = upperGap + (tmItem == tmmin ? 0 : (tmItem - tmmin) * timeitem);
+            var currtime = upperGapTime + (tmItem == tmmin ? 0 : (tmItem - tmmin) * timeitem);
             drawAction.drawTxt(ctx, thGap / 2, currtime - 5, wraptime(tmItem));
             drawAction.draw(ctx, thGap / 2, currtime, w, currtime, timeClr);
             i++;

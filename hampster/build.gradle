@@ -1,43 +1,10 @@
-plugins {
-    id "com.github.hierynomus.license" version "0.12.1"
-}
-
 apply plugin: 'java'
-
-configurations {
-    weave
-}
-sourceSets {
-    license {
-        java {
-            exclude 'hare/writer/model/**'
-        }
-    }
-}
-
-license {
-    header file('../sandbox/HEADER.txt')
-    skipExistingHeaders true
-    strictCheck true
-    sourceSets  = sourceSets.license
-}
 
 repositories {
     mavenCentral()
 }
 
-task instrument(type: JavaExec) {
-    main = 'com.ca.mf.msme.CopyrightAgent'
-    classpath = configurations.weave
-    args = [ sourceSets.main.output.classesDir ]
-}
-compileJava.doLast {
-    tasks.instrument.execute()
-}
-
-
 dependencies {
-    weave project(':license-instrumentation')
     testCompile 'junit:junit:4.12'
 }
 

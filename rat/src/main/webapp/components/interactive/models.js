@@ -22,28 +22,44 @@
         return (str.length == ind) ? -1 : ind
     };
 
+    models.findUnfinishedThreadByClzNameMethodName = function (ths, clzName, mtdName, thName) {
+        var ind = 0;
+        while (ind < ths.length && !(ths[ind].clzName === clzName && ths[ind].mtdName === mtdName
+        && ths[ind].name === thName && (ths[ind].startTime === undefined || ths[ind].endTime === undefined))) {
+            ind++
+        }
+        return (ths.length == ind) ? -1 : ind
+    };
+
     models.getTimeBorders = function (trds) {
         var i = 0;
-        var tmmin = trds[0].time;
-        var tmmax = trds[0].time;
+        var tmmin = trds[0].startTime;
+        var tmmax = trds[0].endTime;
         while (i < trds.length) {
-            if (tmmin > trds[i].time) {
-                tmmin = trds[i].time;
+            if (tmmin > trds[i].startTime) {
+                tmmin = trds[i].startTime;
             }
-            if (tmmax < trds[i].time) {
-                tmmax = trds[i].time;
+            if (tmmax < trds[i].endTime) {
+                tmmax = trds[i].endTime;
             }
             i++;
         }
         return {tmin: tmmin, tmax: tmmax};
     };
 
-    models.filterThreads = function (thrs, startY, endY) {
+    models.filterThreads = function (thrs, startY, endY, startX, endX) {
         var i = 0;
         var threads = [];
         while (i < thrs.length) {
-            if (thrs[i].y > startY && thrs[i].y < endY) {
+            if ((thrs[i].xend > startX && thrs[i].xend < endX) &&
+                ((thrs[i].sy > startY && thrs[i].sy < endY) || (thrs[i].ey > startY && thrs[i].ey < endY))) {
                 threads.push(thrs[i]);
+                if(thrs[i].sy < startY || thrs[i].sy > endY){
+                    thrs[i].sy = undefined;
+                }
+                if(thrs[i].ey < startY || thrs[i].ey > endY){
+                    thrs[i].ey = undefined;
+                }
             }
             i++;
         }
@@ -68,8 +84,14 @@
         var timeitem = (h - upperGap - 10) / (tmmax - tmmin);
         var i = 0;
         while (i < thrds.length) {
-            var currtime = (thrds[i].time - tmmin) * timeitem;
-            thrds[i].y = upperGap + currtime;
+            if (thrds[i].startTime != undefined) {
+                var stime = (thrds[i].startTime - tmmin) * timeitem;
+                thrds[i].sy = upperGap + stime;
+            }
+            if (thrds[i].endTime != undefined) {
+                var etime = (thrds[i].endTime - tmmin) * timeitem;
+                thrds[i].ey = upperGap + etime;
+            }
             i++;
         }
         return thrds;
@@ -83,14 +105,21 @@
             if (ind != -1) {
                 var mind = models.findIndByMethodName(str[ind].mtds, obj[i].methodName);
                 if (mind != -1) {
-                    threads[thInd] = {};
-                    threads[thInd].name = obj[i].thName;
-                    threads[thInd].xend = str[ind].mtds[mind].posX;
-                    threads[thInd].start = obj[i].start;
-                    threads[thInd].time = obj[i].time;
-                    threads[thInd].clzName = obj[i].className;
-                    threads[thInd].mtdName = obj[i].methodName;
-                    thInd++;
+                    var thFound = models.findUnfinishedThreadByClzNameMethodName(threads, obj[i].className, obj[i].methodName, obj[i].thName);
+                    if (thFound  == -1) {
+                        threads[thInd] = {};
+                        threads[thInd].name = obj[i].thName;
+                        threads[thInd].xend = str[ind].mtds[mind].posX;
+                        threads[thInd].clzName = obj[i].className;
+                        threads[thInd].mtdName = obj[i].methodName;
+                        thFound = thInd;
+                        thInd++;
+                    }
+                    if (obj[i].start) {
+                        threads[thFound].startTime = obj[i].time;
+                    } else {
+                        threads[thFound].endTime = obj[i].time;
+                    }
                 }
             }
             i++;

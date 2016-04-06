@@ -11,6 +11,7 @@ angular.module('myApp.interactive', ['ngRoute'])
         var self = this;
         $scope.mtds = [];
         $scope.zoommode = false;
+        $scope.blocksNum = 5;
         var stop;
 
         self.modeChanged = function () {
@@ -75,6 +76,7 @@ angular.module('myApp.interactive', ['ngRoute'])
             var w = 700;
             var h = 700;
             drawZoom.init(document.getElementById('zoomlayer'), w, h);
+            recalculations.init(document.getElementById('zoomlayer'), w, h);
             drawItems.init(element[0], w, h);
             scope.$watch(
                 function () {
@@ -94,7 +96,7 @@ angular.module('myApp.interactive', ['ngRoute'])
                     console.log("I see a data change!");
                     if (obj != undefined && obj[0] != undefined) {
                         state.rawData = obj;
-                        drawItems.redrawByTimer();
+                        recalculations.redrawByTimer();
                     }
                 }, true
             );

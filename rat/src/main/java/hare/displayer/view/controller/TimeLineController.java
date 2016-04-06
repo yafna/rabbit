@@ -21,7 +21,7 @@ public class TimeLineController {
     public
     @ResponseBody
     List<MethodInfo> getDefaultPack() {
-        List<MethodInfo> pack = timeLine.getPackOfData(5);
+        List<MethodInfo> pack = timeLine.getPackOfData(10);
         Collections.sort(pack, new Comparator<MethodInfo>() {
             @Override
             public int compare(MethodInfo o1, MethodInfo o2) {

@@ -54,10 +54,10 @@
             if ((thrs[i].xend > startX && thrs[i].xend < endX) &&
                 ((thrs[i].sy > startY && thrs[i].sy < endY) || (thrs[i].ey > startY && thrs[i].ey < endY))) {
                 threads.push(thrs[i]);
-                if(thrs[i].sy < startY || thrs[i].sy > endY){
+                if (thrs[i].sy < startY || thrs[i].sy > endY) {
                     thrs[i].sy = undefined;
                 }
-                if(thrs[i].ey < startY || thrs[i].ey > endY){
+                if (thrs[i].ey < startY || thrs[i].ey > endY) {
                     thrs[i].ey = undefined;
                 }
             }
@@ -106,7 +106,7 @@
                 var mind = models.findIndByMethodName(str[ind].mtds, obj[i].methodName);
                 if (mind != -1) {
                     var thFound = models.findUnfinishedThreadByClzNameMethodName(threads, obj[i].className, obj[i].methodName, obj[i].thName);
-                    if (thFound  == -1) {
+                    if (thFound == -1) {
                         threads[thInd] = {};
                         threads[thInd].name = obj[i].thName;
                         threads[thInd].xend = str[ind].mtds[mind].posX;
@@ -130,6 +130,7 @@
     //    clr: '',            color
     //    clzName : '',       classname
     //    mtds: []            methods
+    //    hash: 0             class hash
     //};
     models.buildClassStructure = function (obj) {
         var i = 0;
@@ -146,6 +147,7 @@
                 str[thclrind] = {};
                 str[thclrind].clr = clzclrs[thclrind];
                 str[thclrind].clzName = obj[i].className;
+                str[thclrind].hash = obj[i].hash;
                 str[thclrind].mtds = [{'name': obj[i].methodName}];
                 thclrind++;
             } else {
@@ -158,6 +160,122 @@
             i++;
         }
         return str;
+    };
+
+    models.containsPkgName = function (root, name) {
+        var ind = 0;
+        while (ind < root.pkgs.length && root.pkgs[ind].name !== name) {
+            ind++;
+        }
+        return (root.pkgs.length == ind) ? -1 : ind
+    };
+    models.containsClzName = function (root, name) {
+        var ind = 0;
+        while (ind < root.clzs.length && root.clzs[ind].name !== name) {
+            ind++;
+        }
+        return (root.clzs.length == ind) ? -1 : ind
+    };
+    models.containsClzInstance = function (instances, hash) {
+        var ind = 0;
+        while (ind < instances.length && instances[ind].hash !== hash) {
+            ind++;
+        }
+        return (instances.length == ind) ? -1 : ind
+    };
+
+    //build recursive tree structure of package - class - method
+    // {
+    //    name: '',
+    //    collapsed : true,
+    //    pkgs: [{
+    //        name: 'com'
+    //        collapsed : true,
+    //        pkgs: [
+    //            {}
+    //        ],
+    //        clzs: [
+    //            {
+    //                name: 'Main',
+    //                collapsed : true,
+    //                insts: [
+    //                    {
+    //                        hash: 0,
+    //                        mtds: [
+    //                            {
+    //                                name: 'doStuff'
+    //                            }
+    //                        ]
+    //                    }
+    //                ],
+    //                anonymous: [
+    //                    {
+    //                        hash: 0,
+    //                        name: '',
+    //                        mtds: [
+    //                            {
+    //                                name: 'actionPerform'
+    //                            }
+    //                        ]
+    //                    }
+    //                ]
+    //            }
+    //        ]
+    //    }
+    //    ],
+    //    clzs: []
+    //}
+    models.collapseByPackage = function (obj) {
+        var result = {};
+        result.collapsed = true;
+        result.name = '';
+        result.pkgs = [];
+        result.clzs = [];
+        var i = 0;
+        while (i < obj.length) {
+            var strs = obj[i].className.split('/');
+            var j = 0;
+            var root = result;
+            while (j < strs.length - 1) {
+                var pInd = models.containsPkgName(root, strs[j]);
+                if (pInd === -1) {
+                    pInd = root.pkgs.length;
+                    root.pkgs[pInd] = {};
+                    root.pkgs[pInd].collapsed = true;
+                    root.pkgs[pInd].name = strs[j];
+                    root.pkgs[pInd].pkgs = [];
+                    root.pkgs[pInd].clzs = [];
+                }
+                root = root.pkgs[pInd];
+                j++;
+            }
+            var cleanName = strs[strs.length - 1].indexOf('$') === -1 ? strs[strs.length - 1] : strs[strs.length - 1].substring(0, strs[strs.length - 1].indexOf('$'));
+            var cInd = models.containsClzName(root, cleanName);
+            if (cInd === -1) {
+                cInd = root.clzs.length;
+                root.clzs[cInd] = {};
+                root.clzs[cInd].name = cleanName;
+                root.clzs[cInd].collapsed = true;
+                root.clzs[cInd].insts = [];
+                root.clzs[cInd].anonymous = [];
+            }
+            var box = strs[strs.length - 1].indexOf('$') == -1 ? root.clzs[cInd].insts : root.clzs[cInd].anonymous = [];
+            var hInd = models.containsClzInstance(box, obj[i].hash);
+            if (hInd === -1) {
+                hInd = box.length;
+                box[hInd] = {};
+                box[hInd].hash = obj[i].hash;
+                box[hInd].name = strs[strs.length - 1];
+                box[hInd].mtds = [{'name': obj[i].methodName}];
+            } else {
+                var mind = models.findIndByMethodName(box[hInd].mtds, obj[i].methodName);
+                if (mind == -1) {
+                    box[hInd].mtds.push({'name': obj[i].methodName});
+                }
+            }
+            i++;
+        }
+        return result;
     };
 
     models.getClassStructure = function (strFrom, startX, endX) {

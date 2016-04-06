@@ -17,44 +17,7 @@
         zmEl.setAttribute('height', h);
     };
 
-    drawItems.redrawByZoom = function (startX, startY, endX, endY) {
-        var obj = state.rawData;
-        ctx.clearRect(0, 0, w, h);
-        var str = models.getClassStructure(state.visibleStr, startX < endX ? startX : endX, startX > endX ? startX : endX);
-        str = models.recalculateX(str, w, startX < endX ? startX : endX, startX > endX ? startX : endX);
-        state.visibleStr = str;
-        drawclzz(ctx, str);
-
-        var threads = models.filterThreads(state.visibleThrs, startY, endY, startX, endX);
-        if (threads.length != 0) {
-            threads = models.updateThreadX(threads, str);
-            var tme = models.getTimeBorders(threads);
-            threads = models.setThreadY(threads, tme.tmin, tme.tmax, h);
-            state.visibleThrs = threads;
-
-            drawTime(ctx, tme.tmin, tme.tmax);
-            drawThreads(ctx, threads);
-        }
-    };
-
-    drawItems.redrawByTimer = function () {
-        var obj = state.rawData;
-        ctx.clearRect(0, 0, w, h);
-        var str = models.buildClassStructure(obj);
-        str = models.buildXIndex(w, str);
-        var threads = models.buildThreads(obj, str);
-        var tme = models.getTimeBorders(threads);
-        threads = models.setThreadY(threads, tme.tmin, tme.tmax, h);
-        state.visibleStr = str;
-        state.visibleThrs = threads;
-
-        drawclzz(ctx, str);
-        drawTime(ctx, tme.tmin, tme.tmax);
-        drawThreads(ctx, threads);
-    };
-
-
-    function drawclzz(ctx, str) {
+    drawItems.drawclzz = function(ctx, str) {
         var i = 0;
         while (i < str.length) {
             drawAction.drawTxt(ctx, str[i].prX, 10, str[i].clzName);
@@ -69,19 +32,19 @@
             i++;
         }
         return str;
-    }
+    };
 
-    function drawThreads(ctx, threads) {
+    drawItems.drawThreads = function(ctx, threads) {
         var i = 0;
         while (i < threads.length) {
             var startT, endT;
-            if (threads[i].sy == undefined) {
+            if (threads[i].sy === undefined) {
                 startT = upperGapTime;
             } else {
                 startT = threads[i].sy;
                 drawAction.drawHorizontalCurve(ctx, thGap / 2, threads[i].sy, threads[i].xend, threads[i].sy, thclr, true);
             }
-            if (threads[i].ey == undefined) {
+            if (threads[i].ey === undefined) {
                 endT = h;
             } else {
                 endT = threads[i].ey;
@@ -90,9 +53,9 @@
             drawAction.draw(ctx, threads[i].xend, startT, threads[i].xend, endT, thclr);
             i++;
         }
-    }
+    };
 
-    function drawTime(ctx, tmmin, tmmax) {
+    drawItems.drawTime = function(ctx, tmmin, tmmax) {
         var timeitem = (h - upperGapTime - 10) / (tmmax - tmmin);
         var i = 0;
         var delimiters = tmmax - tmmin > 7 ? 7 : tmmax - tmmin;
@@ -109,7 +72,7 @@
             }
         }
         drawAction.draw(ctx, thGap / 2, 0, thGap / 2, h, thclr);
-    }
+    };
 
     function wraptime(millis) {
         var today = new Date(millis),

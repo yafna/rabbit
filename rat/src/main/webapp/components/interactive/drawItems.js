@@ -4,6 +4,8 @@
     var thclr = '#ff0000';
     var fadedClr = '#e6ffe6';
     var timeClr = '#c2d6d6';
+    var white = '#ffffff';
+    var black = '#0d0d0d';
     var thGap = 20;
     var upperGapClz = 30;
     var upperGapTime = 40;
@@ -17,7 +19,32 @@
         zmEl.setAttribute('height', h);
     };
 
-    drawItems.drawclzz = function(ctx, str) {
+    drawItems.drawPkgs = function (pkgs) {
+        ctx.clearRect(0, 0, w, h);
+        var i = 0;
+        drawAction.drawRect(ctx, pkgs.xS, 0,  pkgs.xE, h, pkgs.clr);
+        drawAction.drawTxt(ctx, pkgs.xS, pkgs.y, pkgs.name);
+        drawAction.drawRect(ctx, pkgs.xE-10, pkgs.y-10, pkgs.xE, pkgs.y, white);
+        if(pkgs.collapsed){
+            drawAction.draw(ctx, pkgs.xE-8, pkgs.y-5, pkgs.xE-2, pkgs.y-5, black);
+            drawAction.draw(ctx, pkgs.xE-5, pkgs.y-2, pkgs.xE-5, pkgs.y-8, black);
+            drawItems.drawPkgClassLines(pkgs.y, pkgs.pkgs, pkgs.clzs, pkgs.classlineClr, pkgs.lineClr);
+        }else{
+            drawAction.draw(ctx, pkgs.xE-8, pkgs.y-5, pkgs.xE-2, pkgs.y-5, black);
+        }
+    };
+
+    drawItems.drawPkgClassLines = function(y, pkgs, clzs , classlineClr, pkgLineClr){
+        var j;
+        for (j = 0; j < pkgs.length; j++) {
+            drawAction.draw(ctx, pkgs[j].x, y, pkgs[j].x, h, pkgLineClr);
+        }
+        for (j = 0; j < clzs.length; j++) {
+            drawAction.draw(ctx, clzs[j].x, y, clzs[j].x, h, classlineClr);
+        }
+    };
+
+    drawItems.drawclzz = function (str) {
         var i = 0;
         while (i < str.length) {
             drawAction.drawTxt(ctx, str[i].prX, 10, str[i].clzName);
@@ -34,7 +61,7 @@
         return str;
     };
 
-    drawItems.drawThreads = function(ctx, threads) {
+    drawItems.drawThreads = function (threads) {
         var i = 0;
         while (i < threads.length) {
             var startT, endT;
@@ -55,7 +82,7 @@
         }
     };
 
-    drawItems.drawTime = function(ctx, tmmin, tmmax) {
+    drawItems.drawTime = function (tmmin, tmmax) {
         var timeitem = (h - upperGapTime - 10) / (tmmax - tmmin);
         var i = 0;
         var delimiters = tmmax - tmmin > 7 ? 7 : tmmax - tmmin;

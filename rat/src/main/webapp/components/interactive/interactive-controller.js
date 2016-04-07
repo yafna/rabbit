@@ -54,10 +54,10 @@ angular.module('myApp.interactive', ['ngRoute'])
                 function (resp) {
                     if (self.mtds === undefined) {
                         self.mtds = resp.data;
-                        $scope.mtds = self.mtds;
+                        $scope.mtds = resp.data;
                     } else {
                         self.mtds = self.mtds.concat(resp.data);
-                        $scope.mtds = self.mtds;
+                        $scope.mtds = resp.data;
                     }
                 }
             );
@@ -76,7 +76,7 @@ angular.module('myApp.interactive', ['ngRoute'])
             var w = 700;
             var h = 700;
             drawZoom.init(document.getElementById('zoomlayer'), w, h);
-            recalculations.init(document.getElementById('zoomlayer'), w, h);
+            recalculations.init(w, h);
             drawItems.init(element[0], w, h);
             scope.$watch(
                 function () {

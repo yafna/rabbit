@@ -2,6 +2,11 @@
 (function (models, $, undefined) {
 
     var thGap = 20;
+    var pkgClr = '#f7ffe6';
+    var pkgLineClr = '#466600';
+    var clzClr = '#e6ffff';
+    var clzLineClr = '#006666';
+    var mtdLineClr = '#2929a3';
     var clzclrs = ['#206020', '#336600', '#446600', '#008000', '#006633', '#004d00', '#009900'];
 
     //-1 if nothing found
@@ -225,12 +230,19 @@
     //    ],
     //    clzs: []
     //}
-    models.collapseByPackage = function (obj) {
-        var result = {};
-        result.collapsed = true;
-        result.name = '';
-        result.pkgs = [];
-        result.clzs = [];
+    models.collapseByPackage = function (w, pkgs, obj) {
+        var result = pkgs;
+        if (result.collapsed === undefined) {
+            result.collapsed = true;
+            result.clr = pkgClr;
+            result.lineClr = pkgLineClr;
+            result.classclr = clzClr;
+            result.classlineClr = clzLineClr;
+            result.mtdlineClr = mtdLineClr;
+            result.name = 'root';
+            result.pkgs = [];
+            result.clzs = [];
+        }
         var i = 0;
         while (i < obj.length) {
             var strs = obj[i].className.split('/');
@@ -275,8 +287,39 @@
             }
             i++;
         }
-        return result;
+        return resetXWhereVisible(result, 10, w);
     };
+
+    function resetXWhereVisible(result, xs, xe) {
+        if (result.xS === undefined) {
+            result.xS = (xe - xs) / 2 - 20;
+            result.xE = (xe - xs) / 2 + 20;
+            result.y = 15;
+        }
+        if (result.collapsed) {
+            var j;
+            var allNum = result.pkgs.length + result.clzs.length;
+            var gap = (result.xE - result.xS) < allNum ? -1 : Math.floor((result.xE - result.xS) / allNum);
+            if (gap === -1) {
+                for (j = 0; j < result.clzs.length; j++) {
+                    result.clzs[j].x = result.xS + 3;
+                }
+                for (j = 0; j < result.pkgs.length; j++) {
+                    result.pkgs[j].x = result.xS - 3;
+                }
+            } else {
+                for (j = 0; j < result.clzs.length; j++) {
+                    result.clzs[j].x = result.xS + gap*j;
+                }
+                for (j = 0; j < result.pkgs.length; j++) {
+                    result.pkgs[j].x = result.xS + gap*result.clzs.length + gap*j;
+                }
+            }
+        }else{
+
+        }
+        return result;
+    }
 
     models.getClassStructure = function (strFrom, startX, endX) {
         var i = 0;

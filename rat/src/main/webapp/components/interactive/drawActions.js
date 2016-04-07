@@ -1,7 +1,7 @@
 'use strict';
 (function(drawAction, $, undefined ) {
     drawAction.drawTxt = function (ctx, lx, ly, text) {
-        ctx.font = "10px Arial";
+        ctx.font = " px Arial";
         ctx.fillStyle = '#000000';
         ctx.fillText(text, lx, ly);
     };

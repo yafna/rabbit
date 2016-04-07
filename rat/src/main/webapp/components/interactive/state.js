@@ -10,4 +10,5 @@
     state.rawData = [];
     state.visibleStr = [];
     state.visibleThrs = [];
+    state.pkgs = {};
 }(window.state = window.state || {}, jQuery ));

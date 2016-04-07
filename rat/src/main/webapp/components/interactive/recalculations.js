@@ -21,14 +21,21 @@
             threads = models.setThreadY(threads, tme.tmin, tme.tmax, h);
             state.visibleThrs = threads;
 
-            drawItems.drawTime( tme.tmin, tme.tmax);
-            drawItems.drawThreads( threads);
+            drawItems.drawTime(tme.tmin, tme.tmax);
+            drawItems.drawThreads(threads);
+        }
+    };
+
+    recalculations.checkClickOn = function (x, y) {
+        var pkgs = state.pkgs;
+        if (models.checkActionAndDo(pkgs, x, y, w)) {
+            drawItems.drawPkgs(state.pkgs);
         }
     };
 
     recalculations.redrawByTimer = function (obj) {
         var obj = state.rawData;
-        var pkgs = models.collapseByPackage(w, state.pkgs, obj);
+        state.pkgs = models.collapseByPackage(w, state.pkgs, obj);
 
         //var str = models.buildClassStructure(obj);
         //str = models.buildXIndex(w, str);
@@ -38,7 +45,7 @@
         //state.visibleStr = str;
         //state.visibleThrs = threads;
 
-        drawItems.drawPkgs(pkgs);
+        drawItems.drawPkgs(state.pkgs);
         //drawItems.drawclzz(str);
         //drawItems.drawTime( tme.tmin, tme.tmax);
         //drawItems.drawThreads( threads);

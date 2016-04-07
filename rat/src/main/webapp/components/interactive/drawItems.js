@@ -19,28 +19,50 @@
         zmEl.setAttribute('height', h);
     };
 
-    drawItems.drawPkgs = function (pkgs) {
+    drawItems.drawPkgs = function (itm, clrBox) {
         ctx.clearRect(0, 0, w, h);
-        var i = 0;
-        drawAction.drawRect(ctx, pkgs.xS, 0,  pkgs.xE, h, pkgs.clr);
-        drawAction.drawTxt(ctx, pkgs.xS, pkgs.y, pkgs.name);
-        drawAction.drawRect(ctx, pkgs.xE-10, pkgs.y-10, pkgs.xE, pkgs.y, white);
-        if(pkgs.collapsed){
-            drawAction.draw(ctx, pkgs.xE-8, pkgs.y-5, pkgs.xE-2, pkgs.y-5, black);
-            drawAction.draw(ctx, pkgs.xE-5, pkgs.y-2, pkgs.xE-5, pkgs.y-8, black);
-            drawItems.drawPkgClassLines(pkgs.y, pkgs.pkgs, pkgs.clzs, pkgs.classlineClr, pkgs.lineClr);
-        }else{
-            drawAction.draw(ctx, pkgs.xE-8, pkgs.y-5, pkgs.xE-2, pkgs.y-5, black);
+        drawItems.drawItem(itm, clrBox);
+    };
+    drawItems.drawItem = function (itm, clrBox) {
+        if (itm.clrBox !== undefined) {
+            clrBox = itm.clrBox;
+        }
+        drawAction.drawRect(ctx, itm.xS, itm.y-15, itm.xE, h, clrBox.clr);
+        drawAction.drawTxt(ctx, itm.xS, itm.y, itm.name);
+        drawAction.drawRect(ctx, itm.xE - 10, itm.y - 10, itm.xE, itm.y, white);
+        if (itm.collapsed) {
+            drawAction.draw(ctx, itm.xE - 8, itm.y - 5, itm.xE - 2, itm.y - 5, black);
+            drawAction.draw(ctx, itm.xE - 5, itm.y - 2, itm.xE - 5, itm.y - 8, black);
+            if (itm.pkgs === undefined) {
+                drawItems.drawClzHashMtds(itm.y, itm.insts, clrBox);
+            } else {
+                drawItems.drawPkgClassLines(itm.y, itm.pkgs, itm.clzs, clrBox);
+            }
+        } else {
+            var j;
+            drawAction.draw(ctx, itm.xE - 8, itm.y - 5, itm.xE - 2, itm.y - 5, black);
+            for (j = 0; j < itm.pkgs.length; j++) {
+                drawItems.drawItem(itm.pkgs[j], clrBox);
+            }
+            for (j = 0; j < itm.clzs.length; j++) {
+                drawItems.drawItem(itm.clzs[j], clrBox);
+            }
+        }
+    };
+    drawItems.drawClzHashMtds = function (y, hash, clrBox) {
+        var j;
+        for (j = 0; j < hash.length; j++) {
+            drawAction.draw(ctx, hash[j].x, y, hash[j].x, h, clrBox.mtdlineClr);
         }
     };
 
-    drawItems.drawPkgClassLines = function(y, pkgs, clzs , classlineClr, pkgLineClr){
+    drawItems.drawPkgClassLines = function (y, pkgs, clzs, clrBox) {
         var j;
         for (j = 0; j < pkgs.length; j++) {
-            drawAction.draw(ctx, pkgs[j].x, y, pkgs[j].x, h, pkgLineClr);
+            drawAction.draw(ctx, pkgs[j].x, y, pkgs[j].x, h, clrBox.lineClr);
         }
         for (j = 0; j < clzs.length; j++) {
-            drawAction.draw(ctx, clzs[j].x, y, clzs[j].x, h, classlineClr);
+            drawAction.draw(ctx, clzs[j].x, y, clzs[j].x, h, clrBox.classlineClr);
         }
     };
 

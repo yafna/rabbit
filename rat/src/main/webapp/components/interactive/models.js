@@ -234,11 +234,13 @@
         var result = pkgs;
         if (result.collapsed === undefined) {
             result.collapsed = true;
-            result.clr = pkgClr;
-            result.lineClr = pkgLineClr;
-            result.classclr = clzClr;
-            result.classlineClr = clzLineClr;
-            result.mtdlineClr = mtdLineClr;
+            result.clrBox = {
+                clr: pkgClr,
+                lineClr: pkgLineClr,
+                classclr: clzClr,
+                classlineClr: clzLineClr,
+                mtdlineClr: mtdLineClr
+            };
             result.name = 'root';
             result.pkgs = [];
             result.clzs = [];
@@ -287,38 +289,121 @@
             }
             i++;
         }
-        return resetXWhereVisible(result, 10, w);
+        resetXWhereVisible(result, 10, w, 0);
+        return result;
     };
 
-    function resetXWhereVisible(result, xs, xe) {
-        if (result.xS === undefined) {
-            result.xS = (xe - xs) / 2 - 20;
-            result.xE = (xe - xs) / 2 + 20;
-            result.y = 15;
-        }
+    var collapsedSize = 39;
+
+    function resetXWhereVisible(result, xs, xe, y) {
+        result.y = y + 15;
+        result.xS = xs;
+        result.xE = xe;
+        var allNum;
         if (result.collapsed) {
+            if ((xe - xs) > collapsedSize) {
+                result.xS = (xe - xs) / 2 - 20;
+                result.xE = (xe - xs) / 2 + 20;
+            }
             var j;
-            var allNum = result.pkgs.length + result.clzs.length;
-            var gap = (result.xE - result.xS) < allNum ? -1 : Math.floor((result.xE - result.xS) / allNum);
-            if (gap === -1) {
-                for (j = 0; j < result.clzs.length; j++) {
-                    result.clzs[j].x = result.xS + 3;
-                }
-                for (j = 0; j < result.pkgs.length; j++) {
-                    result.pkgs[j].x = result.xS - 3;
+            if (result.pkgs !== undefined) {
+                allNum = result.pkgs.length + result.clzs.length;
+                var gap = (result.xE - result.xS) < allNum ? -1 : Math.floor((result.xE - result.xS) / allNum);
+                if (gap === -1) {
+                    for (j = 0; j < result.clzs.length; j++) {
+                        result.clzs[j].x = result.xS + 3;
+                    }
+                    for (j = 0; j < result.pkgs.length; j++) {
+                        result.pkgs[j].x = result.xE - 3;
+                    }
+                } else {
+                    for (j = 0; j < result.clzs.length; j++) {
+                        result.clzs[j].x = result.xS + gap * j;
+                    }
+                    for (j = 0; j < result.pkgs.length; j++) {
+                        result.pkgs[j].x = result.xS + gap * result.clzs.length + gap * j;
+                    }
                 }
             } else {
-                for (j = 0; j < result.clzs.length; j++) {
-                    result.clzs[j].x = result.xS + gap*j;
-                }
-                for (j = 0; j < result.pkgs.length; j++) {
-                    result.pkgs[j].x = result.xS + gap*result.clzs.length + gap*j;
+                allNum = result.insts.length;
+                var gapH = (result.xE - result.xS) < allNum ? -1 : Math.floor((result.xE - result.xS) / allNum);
+                if (gapH === -1) {
+                    for (j = 0; j < result.insts.length; j++) {
+                        result.insts[j].x = result.xS + 3;
+                    }
+                } else {
+                    for (j = 0; j < result.insts.length; j++) {
+                        result.insts[j].x = result.xS + gapH * j;
+                    }
                 }
             }
-        }else{
-
+        } else {
+            allNum = result.pkgs.length + result.clzs.length;
+            var mingap = (result.xE - result.xS) / allNum;
+            if (mingap < collapsedSize) {
+                //too tiny blocks. do not allow expand further , rollback expansion and return
+                result.collapsed = true;
+                resetXWhereVisible(result, xs, xe, y);
+                return;
+            }
+            var allExpanded = 0;
+            for (j = 0; j < result.pkgs.length; j++) {
+                if (!result.pkgs[j].collapsed) {
+                    allExpanded++;
+                }
+            }
+            var expandedSize = ((xe - xs) - (allNum - allExpanded) * 40) / allExpanded;
+            var position = xs;
+            for (j = 0; j < result.clzs.length; j++) {
+                if (result.clzs[j].collapsed) {
+                    resetXWhereVisible(result.clzs[j], position, position + collapsedSize, result.y);
+                    position = position + collapsedSize + 1;
+                }
+            }
+            for (j = 0; j < result.pkgs.length; j++) {
+                if (result.pkgs[j].collapsed) {
+                    resetXWhereVisible(result.pkgs[j], position, position + collapsedSize, result.y);
+                    position = position + collapsedSize + 1;
+                } else {
+                    resetXWhereVisible(result.pkgs[j], position, position + expandedSize, result.y);
+                    position = position + expandedSize + 1;
+                }
+            }
         }
-        return result;
+    }
+
+    models.checkActionAndDo = function (pkgs, x, y, w) {
+        if (findAndDoCollapseAction(pkgs, x, y)) {
+            resetXWhereVisible(pkgs, 10, w, 0);
+            return true;
+        }
+        return false;
+    };
+
+    function findAndDoCollapseAction(itms, x, y) {
+        if (inActionSquare(itms.xE, itms.y, x, y)) {
+            itms.collapsed = !itms.collapsed;
+            return true;
+        } else if (y > itms.y) {
+            var j;
+            if (itms.pkgs !== undefined) {
+                for (j = 0; j < itms.clzs.length; j++) {
+                    if (findAndDoCollapseAction(itms.clzs[j], x, y)) {
+                        return true;
+                    }
+                }
+                for (j = 0; j < itms.pkgs.length; j++) {
+                    if (findAndDoCollapseAction(itms.pkgs[j], x, y)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    function inActionSquare(xe, ye, x, y) {
+        return x < xe && y < ye && (xe - x) < 10 && (ye - y) < 10;
     }
 
     models.getClassStructure = function (strFrom, startX, endX) {

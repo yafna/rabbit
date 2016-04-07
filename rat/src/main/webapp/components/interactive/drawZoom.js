@@ -16,6 +16,8 @@
             zoomState.selecting = true;
             zoomState.startX = event.pageX - rect.left;
             zoomState.startY = event.pageY - rect.top;
+        }else{
+            recalculations.checkClickOn(event.pageX - rect.left, event.pageY - rect.top);
         }
     }
 

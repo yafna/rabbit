@@ -8,6 +8,7 @@
     //    endY: 0
     //};
     state.rawData = [];
+    state.allRawData = [];
     state.visibleStr = [];
     state.visibleThrs = [];
     state.pkgs = {};

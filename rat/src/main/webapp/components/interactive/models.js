@@ -18,15 +18,6 @@
         return (mtds.length == mind) ? -1 : mind
     };
 
-    //-1 if nothing found
-    models.findIndByClazzName = function (str, name) {
-        var ind = 0;
-        while (ind < str.length && str[ind].clzName != name) {
-            ind++
-        }
-        return (str.length == ind) ? -1 : ind
-    };
-
     models.findUnfinishedThreadByClzNameMethodName = function (ths, clzName, mtdName, thName) {
         var ind = 0;
         while (ind < ths.length && !(ths[ind].clzName === clzName && ths[ind].mtdName === mtdName
@@ -85,7 +76,7 @@
     };
 
     models.setThreadY = function (thrds, tmmin, tmmax, h) {
-        var upperGap = 40;
+        var upperGap = 140;
         var timeitem = (h - upperGap - 10) / (tmmax - tmmin);
         var i = 0;
         while (i < thrds.length) {
@@ -102,69 +93,64 @@
         return thrds;
     };
 
-    models.buildThreads = function (obj, str) {
+    function findCorrespondedX(pkgs, clazz, hash) {
+        var strs = clazz.split('/');
+        var j = 0, root = pkgs, lastmv = false;
+        while (j < strs.length - 1) {
+            var pInd = models.containsPkgName(root, strs[j]);
+            if (lastmv) {
+                return root.x;
+            }
+            if (pInd !== -1) {
+                if (root.collapsed) {
+                    lastmv = true;
+                }
+                root = root.pkgs[pInd];
+                j++;
+            } else {
+                return -1;
+            }
+        }
+        if (lastmv) {
+            return root.x;
+        }
+        var cleanName = strs[strs.length - 1].indexOf('$') === -1 ? strs[strs.length - 1] : strs[strs.length - 1].substring(0, strs[strs.length - 1].indexOf('$'));
+        var cInd = models.containsClzName(root, cleanName);
+        if (cInd !== -1) {
+            var box = strs[strs.length - 1].indexOf('$') === -1 ? root.clzs[cInd].insts : root.clzs[cInd].anonymous;
+            var hInd = models.containsClzInstance(box, hash);
+            if (hInd !== -1) {
+                return box[hInd].x;
+            }
+        }
+        return -1;
+    }
+
+    models.buildThreads = function (obj, pkgs) {
         var i = 0, thInd = 0;
         var threads = [];
         while (i < obj.length) {
-            var ind = models.findIndByClazzName(str, obj[i].className);
-            if (ind != -1) {
-                var mind = models.findIndByMethodName(str[ind].mtds, obj[i].methodName);
-                if (mind != -1) {
-                    var thFound = models.findUnfinishedThreadByClzNameMethodName(threads, obj[i].className, obj[i].methodName, obj[i].thName);
-                    if (thFound == -1) {
-                        threads[thInd] = {};
-                        threads[thInd].name = obj[i].thName;
-                        threads[thInd].xend = str[ind].mtds[mind].posX;
-                        threads[thInd].clzName = obj[i].className;
-                        threads[thInd].mtdName = obj[i].methodName;
-                        thFound = thInd;
-                        thInd++;
-                    }
-                    if (obj[i].start) {
-                        threads[thFound].startTime = obj[i].time;
-                    } else {
-                        threads[thFound].endTime = obj[i].time;
-                    }
+            var x = findCorrespondedX(pkgs, obj[i].className, obj[i].hash);
+            if (x != -1) {
+                var thFound = models.findUnfinishedThreadByClzNameMethodName(threads, obj[i].className, obj[i].methodName, obj[i].thName);
+                if (thFound == -1) {
+                    threads[thInd] = {};
+                    threads[thInd].name = obj[i].thName;
+                    threads[thInd].xend = x;
+                    threads[thInd].clzName = obj[i].className;
+                    threads[thInd].mtdName = obj[i].methodName;
+                    thFound = thInd;
+                    thInd++;
+                }
+                if (obj[i].start) {
+                    threads[thFound].startTime = obj[i].time;
+                } else {
+                    threads[thFound].endTime = obj[i].time;
                 }
             }
             i++;
         }
         return threads;
-    };
-    //var str = {
-    //    clr: '',            color
-    //    clzName : '',       classname
-    //    mtds: []            methods
-    //    hash: 0             class hash
-    //};
-    models.buildClassStructure = function (obj) {
-        var i = 0;
-        var str = [];
-        var thclrind = 0;
-        var thNames = [];
-        var clNames = [];
-        while (i < obj.length) {
-            if (thNames.indexOf(obj[i].thName) == -1) {
-                thNames.push(obj[i].thName)
-            }
-            if (clNames.indexOf(obj[i].className) == -1) {
-                clNames.push(obj[i].className);
-                str[thclrind] = {};
-                str[thclrind].clr = clzclrs[thclrind];
-                str[thclrind].clzName = obj[i].className;
-                str[thclrind].hash = obj[i].hash;
-                str[thclrind].mtds = [{'name': obj[i].methodName}];
-                thclrind++;
-            } else {
-                var ind = models.findIndByClazzName(str, obj[i].className);
-                var mind = models.findIndByMethodName(str[ind].mtds, obj[i].methodName);
-                if (mind == -1) {
-                    str[ind].mtds.push({'name': obj[i].methodName});
-                }
-            }
-            i++;
-        }
-        return str;
     };
 
     models.containsPkgName = function (root, name) {
@@ -273,7 +259,7 @@
                 root.clzs[cInd].insts = [];
                 root.clzs[cInd].anonymous = [];
             }
-            var box = strs[strs.length - 1].indexOf('$') == -1 ? root.clzs[cInd].insts : root.clzs[cInd].anonymous = [];
+            var box = strs[strs.length - 1].indexOf('$') === -1 ? root.clzs[cInd].insts : root.clzs[cInd].anonymous;
             var hInd = models.containsClzInstance(box, obj[i].hash);
             if (hInd === -1) {
                 hInd = box.length;
@@ -289,7 +275,7 @@
             }
             i++;
         }
-        resetXWhereVisible(result, 10, w, 0);
+        resetXWhereVisible(result, 40, w, 0);
         return result;
     };
 
@@ -325,15 +311,21 @@
                     }
                 }
             } else {
-                allNum = result.insts.length;
+                allNum = result.insts.length + result.anonymous.length;
                 var gapH = (result.xE - result.xS) < allNum ? -1 : Math.floor((result.xE - result.xS) / allNum);
                 if (gapH === -1) {
                     for (j = 0; j < result.insts.length; j++) {
                         result.insts[j].x = result.xS + 3;
                     }
+                    for (j = 0; j < result.anonymous.length; j++) {
+                        result.anonymous[j].x = result.xS + 3;
+                    }
                 } else {
                     for (j = 0; j < result.insts.length; j++) {
                         result.insts[j].x = result.xS + gapH * j;
+                    }
+                    for (j = 0; j < result.anonymous.length; j++) {
+                        result.anonymous[j].x = result.xS + gapH * j;
                     }
                 }
             }
@@ -374,7 +366,7 @@
 
     models.checkActionAndDo = function (pkgs, x, y, w) {
         if (findAndDoCollapseAction(pkgs, x, y)) {
-            resetXWhereVisible(pkgs, 10, w, 0);
+            resetXWhereVisible(pkgs, 40, w, 0);
             return true;
         }
         return false;

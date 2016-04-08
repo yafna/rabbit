@@ -34,24 +34,33 @@
             drawAction.draw(ctx, itm.xE - 8, itm.y - 5, itm.xE - 2, itm.y - 5, black);
             drawAction.draw(ctx, itm.xE - 5, itm.y - 2, itm.xE - 5, itm.y - 8, black);
             if (itm.pkgs === undefined) {
-                drawItems.drawClzHashMtds(itm.y, itm.insts, clrBox);
+                drawItems.drawClzHashMtds(itm.y, itm.insts, itm.anonymous, clrBox);
             } else {
                 drawItems.drawPkgClassLines(itm.y, itm.pkgs, itm.clzs, clrBox);
             }
         } else {
             var j;
             drawAction.draw(ctx, itm.xE - 8, itm.y - 5, itm.xE - 2, itm.y - 5, black);
-            for (j = 0; j < itm.pkgs.length; j++) {
-                drawItems.drawItem(itm.pkgs[j], clrBox);
-            }
-            for (j = 0; j < itm.clzs.length; j++) {
-                drawItems.drawItem(itm.clzs[j], clrBox);
+            if (itm.pkgs === undefined) {
+                for (j = 0; j < itm.insts.length; j++) {
+                    drawItems.drawClzHashMtds(itm.y, itm.insts, clrBox);
+                }
+            }else{
+                for (j = 0; j < itm.pkgs.length; j++) {
+                    drawItems.drawItem(itm.pkgs[j], clrBox);
+                }
+                for (j = 0; j < itm.clzs.length; j++) {
+                    drawItems.drawItem(itm.clzs[j], clrBox);
+                }
             }
         }
     };
-    drawItems.drawClzHashMtds = function (y, hash, clrBox) {
+    drawItems.drawClzHashMtds = function (y, hash, ahash, clrBox) {
         var j;
         for (j = 0; j < hash.length; j++) {
+            drawAction.draw(ctx, hash[j].x, y, hash[j].x, h, clrBox.mtdlineClr);
+        }
+        for (j = 0; j < ahash.length; j++) {
             drawAction.draw(ctx, hash[j].x, y, hash[j].x, h, clrBox.mtdlineClr);
         }
     };

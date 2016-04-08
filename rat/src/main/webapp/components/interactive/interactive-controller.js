@@ -96,6 +96,7 @@ angular.module('myApp.interactive', ['ngRoute'])
                     console.log("I see a data change!");
                     if (obj != undefined && obj[0] != undefined) {
                         state.rawData = obj;
+                        state.allRawData = state.allRawData.concat(obj);
                         recalculations.redrawByTimer();
                     }
                 }, true

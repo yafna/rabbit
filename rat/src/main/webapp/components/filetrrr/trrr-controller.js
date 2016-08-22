@@ -8,7 +8,9 @@ angular.module('myApp.filetrrr', ['ngRoute'])
     }])
     .controller('TControl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
          var self = this;
-         $scope.mtds = [];
+          $scope.dataForTheTree = {};
+          $scope.dataForTheTree.name = 'root';
+         $scope.dataForTheTree.children = [];
          var stop;
 
          self.startTimer = function () {
@@ -39,8 +41,7 @@ angular.module('myApp.filetrrr', ['ngRoute'])
              if (angular.isDefined(stop)) return;
              getData().then(
                  function (resp) {
-                         var root = treemodel.buildTree(resp.data);
-                         $scope.dataForTheTree = root;
+                       $scope.dataForTheTree =  treemodel.buildTreeAdvanced( $scope.dataForTheTree ,resp.data )
                  }
              );
          };
@@ -64,6 +65,4 @@ angular.module('myApp.filetrrr', ['ngRoute'])
                 labelSelected: "a8"
             }
          }
-
-         getPack();
     }])

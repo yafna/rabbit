@@ -2,15 +2,12 @@
 (function (treemodel, $, undefined) {
 
 
-    //extracts from mtds package+class tree information and builds it in a tree structure.
+    //extracts from mtds package+class tree information and merges it in the tree structure.
     //node {
     //   name: ''
     //   children : [ ... node ... ]
     //}
-    treemodel.buildTree = function(mtds){
-        var root = {};
-        root.name = "root";
-        root.children = [];
+   treemodel.buildTreeAdvanced = function(root, mtds){
         for(var j = 0; j < mtds.length; j++){
             var pkgs = mtds[j].className.split('/');
             var  pointer = root.children;

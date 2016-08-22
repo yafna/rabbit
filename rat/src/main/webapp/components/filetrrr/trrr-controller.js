@@ -3,8 +3,7 @@
 angular.module('myApp.filetrrr', ['ngRoute'])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/filetrrr', {
-            templateUrl: 'components/filetrrr/filetrrr.html',
-            controller: 'TControl'
+            templateUrl: 'components/filetrrr/filetrrr.html'
         });
     }])
     .controller('TControl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
@@ -39,25 +38,17 @@ angular.module('myApp.filetrrr', ['ngRoute'])
          self.getPack = function () {
              if (angular.isDefined(stop)) return;
              getData().then(
-                     function (resp) {
-                         if (self.mtds === undefined) {
-                             self.mtds = resp.data;
-                             $scope.mtds = resp.data;
-                             var root = treemodel.buildTree(mtds);
-                             $scope.dataForTheTree = root;
-                         } else {
-                             self.mtds = self.mtds.concat(resp.data);
-                             $scope.mtds = resp.data;
-                              var root = treemodel.buildTree(mtds);
-                              $scope.dataForTheTree = root;
-                         }
-                     }
+                 function (resp) {
+                         var root = treemodel.buildTree(resp.data);
+                         $scope.dataForTheTree = root;
+                 }
              );
          };
 
          function getData() {
              return $http.get("/data/pack");
          }
+
 
          $scope.treeOptions = {
             nodeChildren: "children",
@@ -74,19 +65,5 @@ angular.module('myApp.filetrrr', ['ngRoute'])
             }
          }
 
-         $scope.dataForTheTree =
-                 [
-                     { "name" : "Joe", "age" : "21", "children" : [
-                         { "name" : "Smith", "age" : "42", "children" : [] },
-                         { "name" : "Gary", "age" : "21", "children" : [
-                             { "name" : "Jenifer", "age" : "23", "children" : [
-                                 { "name" : "Dani", "age" : "32", "children" : [] },
-                                 { "name" : "Max", "age" : "34", "children" : [] }
-                             ]}
-                         ]}
-                     ]},
-                     { "name" : "Albert", "age" : "33", "children" : [] },
-                     { "name" : "Ron", "age" : "29", "children" : [] }
-                 ];
-
+         getPack();
     }])

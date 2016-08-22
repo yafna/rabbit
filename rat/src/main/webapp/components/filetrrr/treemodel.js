@@ -8,25 +8,27 @@
     //   children : [ ... node ... ]
     //}
     treemodel.buildTree = function(mtds){
-        var root = [];
+        var root = {};
+        root.name = "root";
+        root.children = [];
         for(var j = 0; j < mtds.length; j++){
-            var pkgs = mtds[j].className.split('.');
-            var  pointer = root;
+            var pkgs = mtds[j].className.split('/');
+            var  pointer = root.children;
             for(var k = 0; k < pkgs.length; ++k){
                 var ind = findAndInsertIfMissing(pointer, pkgs[k]);
-                pointer = pointer[ind];
+                pointer = pointer[ind].children;
             }
-            indAndInsertIfMissing(pointer, mtds[j].methodName);
+            findAndInsertIfMissing(pointer, mtds[j].methodName);
         }
         return root;
     }
 
-    function findAndInsertIfMissing(arrayNodes, nodeName){
-         var ind = containNode(pointer, pkgs[k]);
+    function findAndInsertIfMissing(pointer, nodeName){
+         var ind = containNode(pointer, nodeName);
              if(ind === -1){
                  ind = pointer.length;
                  pointer[ind] = {};
-                 pointer[ind].name = pkgs[k];
+                 pointer[ind].name = nodeName;
                  pointer[ind].children = [];
              }
          return ind;
@@ -35,7 +37,7 @@
     // returns index or -1 otherwise
     function containNode(arrayNodes, nodeName){
         for(var j = 0; j < arrayNodes.length; j++){
-           if(arrayNodes[j].name = nodeName){
+           if(arrayNodes[j].name === nodeName){
                 return j;
            }
         }

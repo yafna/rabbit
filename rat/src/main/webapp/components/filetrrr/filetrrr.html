@@ -1,11 +1,11 @@
-<div class="col-md-12 upper-gap" ng-controller="TControl">
+<div class="col-md-12 upper-gap" ng-controller="TControl as tctrl">
     <div class="row">
-        <button ng-click="TControl.getPack()" type="button" class="btn btn-primary">get single pack
+        <button ng-click="tctrl.getPack()" type="button" class="btn btn-primary">get single pack
         </button>
 
-        <button ng-click="TControl.startTimer()" type="button" class="btn btn-primary">startTimer
+        <button ng-click="tctrl.startTimer()" type="button" class="btn btn-primary">startTimer
         </button>
-        <button ng-click="TControl.stopTimer()" type="button" class="btn btn-primary">stopTimer
+        <button ng-click="tctrl.stopTimer()" type="button" class="btn btn-primary">stopTimer
         </button>
     </div>
 
@@ -13,7 +13,6 @@
         <div treecontrol class="tree-classic"
              tree-model="dataForTheTree"
              options="treeOptions"
-             on-selection="showSelected(node)"
              selected-node="node1"
              expanded-nodes="expandedNodes">
             {{node.name}}

@@ -1,5 +1,7 @@
 package hare.displayer.view.controller;
 
+import hare.displayer.dto.TreeItem;
+import hare.displayer.service.Geometry;
 import hare.displayer.service.TimeLine;
 import model.MethodInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +17,15 @@ import java.util.List;
 @RequestMapping("/data")
 public class TimeLineController {
     @Autowired
-    public TimeLine timeLine;
+    private TimeLine timeLine;
+    @Autowired
+    private Geometry geometry;
 
     @RequestMapping("/pack")
     public
     @ResponseBody
     List<MethodInfo> getDefaultPack() {
-        List<MethodInfo> pack = timeLine.getPackOfData(10);
+        List<MethodInfo> pack = timeLine.packOfData(10);
         Collections.sort(pack, new Comparator<MethodInfo>() {
             @Override
             public int compare(MethodInfo o1, MethodInfo o2) {
@@ -30,4 +34,12 @@ public class TimeLineController {
         });
         return pack;
     }
+
+    @RequestMapping("/packAll")
+    public
+    @ResponseBody
+    TreeItem getAll() {
+        return geometry.getTreeWithCoordinates(timeLine.allData());
+    }
+
 }

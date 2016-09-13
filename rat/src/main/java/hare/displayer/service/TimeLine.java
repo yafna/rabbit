@@ -44,7 +44,23 @@ public class TimeLine {
         });
     }
 
-    public List<MethodInfo> getPackOfData(int size){
+    public List<MethodInfo> allData(){
+        List<MethodInfo> res = new ArrayList<>();
+        try {
+            String line = reader.readLine();
+            while (line != null) {
+                if (Parser.isMethodLine(line)) {
+                    res.add(Parser.getMethodLine(line));
+                }
+                line = reader.readLine();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return res;
+    }
+
+    public List<MethodInfo> packOfData(int size){
         List<MethodInfo> res = new ArrayList<>();
         try {
             String line = reader.readLine();

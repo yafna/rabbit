@@ -21,6 +21,9 @@ public class TimeLineController {
     @Autowired
     private Geometry geometry;
 
+
+    private TreeItem calculated;
+
     @RequestMapping("/pack")
     public
     @ResponseBody
@@ -39,7 +42,10 @@ public class TimeLineController {
     public
     @ResponseBody
     TreeItem getAll() {
-        return geometry.getTreeWithCoordinates(timeLine.allData());
+        if(calculated == null) {
+            calculated = geometry.getTreeWithCoordinates(timeLine.allData());
+        }
+        return calculated;
     }
 
 }

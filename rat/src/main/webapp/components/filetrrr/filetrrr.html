@@ -1,21 +1,8 @@
 <div class="col-md-12 upper-gap" ng-controller="TControl as tctrl">
     <div class="row">
-        <button ng-click="tctrl.getPack()" type="button" class="btn btn-primary">get single pack
-        </button>
-
-        <button ng-click="tctrl.startTimer()" type="button" class="btn btn-primary">startTimer
-        </button>
-        <button ng-click="tctrl.stopTimer()" type="button" class="btn btn-primary">stopTimer
+        <button ng-click="tctrl.getPack()" type="button" class="btn btn-primary">get all
         </button>
     </div>
 
-    <div class="row">
-        <div treecontrol class="tree-classic"
-             tree-model="dataForTheTree"
-             options="treeOptions"
-             selected-node="node1"
-             expanded-nodes="expandedNodes">
-            {{node.name}}
-        </div>
-    </div>
+    <div id="container"></div>
 </div>

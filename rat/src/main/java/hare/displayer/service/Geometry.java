@@ -9,7 +9,6 @@ import java.util.List;
 @Service
 public class Geometry {
 
-
     private float rad = 30;
 
     public TreeItem getTreeWithCoordinates(List<MethodInfo> data) {

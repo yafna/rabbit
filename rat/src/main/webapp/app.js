@@ -3,8 +3,7 @@
 angular.module('myApp', [
     'ngRoute',
     'myApp.interactive',
-    'myApp.filetrrr',
-    'treeControl'
+    'myApp.filetrrr'
 ])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.otherwise({redirectTo: '/filetrrr'});

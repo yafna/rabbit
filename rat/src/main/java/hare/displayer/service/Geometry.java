@@ -9,11 +9,11 @@ import java.util.List;
 @Service
 public class Geometry {
 
-    private float rad = 30;
+    private float rad = 50;
 
     public TreeItem getTreeWithCoordinates(List<MethodInfo> data) {
         TreeItem root = buildTreeStructure(data);
-        root.setXYZ(400, 400, 40);
+        root.setXYZ(0, 0, 40);
         setXYZ(root);
         return root;
     }
@@ -27,7 +27,7 @@ public class Geometry {
                 treeItem.setXYZ(
                         root.getX() + Math.round(rad * (float) Math.cos(angle * Math.PI / 180)),
                         root.getY() + Math.round(rad * (float) Math.sin(angle * Math.PI / 180)),
-                        root.getZ() + 10);
+                        root.getZ() + 50);
                 angle += rotation;
                 setXYZ(treeItem);
             }

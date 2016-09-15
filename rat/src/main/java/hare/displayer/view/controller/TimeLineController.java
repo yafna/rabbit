@@ -1,5 +1,6 @@
 package hare.displayer.view.controller;
 
+import hare.displayer.dto.ThreeData;
 import hare.displayer.dto.TreeItem;
 import hare.displayer.service.Geometry;
 import hare.displayer.service.TimeLine;
@@ -22,7 +23,7 @@ public class TimeLineController {
     private Geometry geometry;
 
 
-    private TreeItem calculated;
+    private ThreeData calculated;
 
     @RequestMapping("/pack")
     public
@@ -41,9 +42,9 @@ public class TimeLineController {
     @RequestMapping("/packAll")
     public
     @ResponseBody
-    TreeItem getAll() {
+    ThreeData getAll() {
         if(calculated == null) {
-            calculated = geometry.getTreeWithCoordinates(timeLine.allData());
+            calculated = new ThreeData(geometry.getTreeWithCoordinates(timeLine.allData()));
         }
         return calculated;
     }

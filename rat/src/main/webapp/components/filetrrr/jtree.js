@@ -2,7 +2,7 @@
 (function(jtree, $, undefined ) {
     var group;
 			var stats;
-			var particlesData = [];
+			var particlesData = [], pP2, linePos, colors;
 			var camera, scene, renderer;
 			var positions, colors;
 			var particles;
@@ -10,22 +10,13 @@
 			var particlePositions;
 			var linesMesh;
 
-			var maxParticleCount = 1000;
+			var particleCount;
 			var particleCount = 5;
 			var r = 800;
 			var rHalf = r / 2;
 
-			var effectController = {
-				showDots: true,
-				showLines: true,
-				minDistance: 150,
-				limitConnections: false,
-				maxConnections: 20,
-				particleCount: 500
-			};
-
-	jtree.init = function(container) {
-				//
+	jtree.init = function(container, data) {
+		if(data !== undefined){
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 4000 );
 				camera.position.z = 1750;
 
@@ -39,10 +30,10 @@
 				helper.material.transparent = true;
 				group.add( helper );
 
-				var segments = maxParticleCount * maxParticleCount;
+                particleCount =data.itemsNum;
 
-				positions = new Float32Array( segments * 3 );
-				colors = new Float32Array( segments * 3 );
+				linePos = new Float32Array( (particleCount -1) * 6  );
+				colors = new Float32Array( (particleCount -1) * 6 );
 
 				var pMaterial = new THREE.PointsMaterial( {
 					color: 0xFFFFFF,
@@ -52,29 +43,14 @@
 					sizeAttenuation: false
 				} );
 
+
 				particles = new THREE.BufferGeometry();
-				particlePositions = new Float32Array( maxParticleCount * 3 );
-
-				for ( var i = 0; i < maxParticleCount; i++ ) {
-
-					var x = Math.random() * r - r / 2;
-					var y = Math.random() * r - r / 2;
-					var z = Math.random() * r - r / 2;
-
-					particlePositions[ i * 3     ] = x;
-					particlePositions[ i * 3 + 1 ] = y;
-					particlePositions[ i * 3 + 2 ] = z;
-
-					// add it to the geometry
-					particlesData.push( {
-						velocity: new THREE.Vector3( -1 + Math.random() * 2, -1 + Math.random() * 2,  -1 + Math.random() * 2 ),
-						numConnections: 0
-					} );
-
-				}
+				var pP2 = new Float32Array( particleCount * 3 );
+				idx = 0; idxline = 0;
+                addParticle(data.root, pP2, linePos, colors);
 
 				particles.setDrawRange( 0, particleCount );
-				particles.addAttribute( 'position', new THREE.BufferAttribute( particlePositions, 3 ).setDynamic( true ) );
+				particles.addAttribute( 'position', new THREE.BufferAttribute( pP2, 3 ).setDynamic( true ) );
 
 				// create the particle system
 				pointCloud = new THREE.Points( particles, pMaterial );
@@ -82,7 +58,7 @@
 
 				var geometry = new THREE.BufferGeometry();
 
-				geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ).setDynamic( true ) );
+				geometry.addAttribute( 'position', new THREE.BufferAttribute( linePos, 3 ).setDynamic( true ) );
 				geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ).setDynamic( true ) );
 
 				geometry.computeBoundingSphere();
@@ -106,26 +82,47 @@
 				renderer.gammaOutput = true;
 
 				container.appendChild( renderer.domElement );
+
+				linesMesh.geometry.setDrawRange( 0, (particleCount -1) * 2 );
+                linesMesh.geometry.attributes.position.needsUpdate = true;
+                linesMesh.geometry.attributes.color.needsUpdate = true;
+
+                pointCloud.geometry.attributes.position.needsUpdate = true;
+                requestAnimationFrame( jtree.init );
+                jtree.render();
+        }
 	};
 
-	jtree.animate = function() {
-				var vertexpos = 0;
-				var colorpos = 0;
-				var numConnected = 0;
+    var idx, idxline ;
+    function addParticle(root, pP2, linePos, colors){
+        var connections = [];
+        pP2[ idx * 3     ] = root.x;
+        pP2[ idx * 3 + 1 ] = root.y;
+        pP2[ idx * 3 + 2 ] = root.z;
+        idx++;
 
-
-				linesMesh.geometry.setDrawRange( 0, numConnected * 2 );
-				linesMesh.geometry.attributes.position.needsUpdate = true;
-				linesMesh.geometry.attributes.color.needsUpdate = true;
-				pointCloud.geometry.attributes.position.needsUpdate = true;
-
-				requestAnimationFrame( jtree.animate );
-				jtree.render();
-	};
+        for(var i =0; i < root.nodes.length; i++){
+             linePos[ idxline * 3     ] = root.x;
+             linePos[ idxline * 3 + 1 ] = root.y;
+             linePos[ idxline * 3 + 2 ] = root.z;
+             colors[ idxline * 3     ] = 88;
+             colors[ idxline * 3 + 1 ] = 20;
+             colors[ idxline * 3 + 2 ] = 120;
+             idxline++;
+             linePos[ idxline * 3     ] = root.nodes[i].x;
+             linePos[ idxline * 3 + 1 ] = root.nodes[i].y;
+             linePos[ idxline * 3 + 2 ] = root.nodes[i].z;
+             colors[ idxline * 3     ] = 88;
+             colors[ idxline * 3 + 1 ] = 20;
+             colors[ idxline * 3 + 2 ] = 120;
+             idxline++;
+             addParticle(root.nodes[i], pP2, linePos, colors)
+        }
+    }
 
 	jtree.render = function() {
 				var time = Date.now() * 0.001;
-				group.rotation.y = time * 0.05;
+                group.rotation.y = time * 0.1;
 				renderer.render( scene, camera );
 	};
 }(window.jtree = window.jtree || {}, jQuery ));

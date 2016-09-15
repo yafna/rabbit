@@ -9,13 +9,14 @@
 			var pointCloud;
 			var particlePositions;
 			var linesMesh;
+			var controls;
 
 			var particleCount;
 			var particleCount = 5;
 			var r = 800;
 			var rHalf = r / 2;
 
-	jtree.init = function(container, data) {
+	jtree.init = function(container, data, window) {
 		if(data !== undefined){
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 4000 );
 				camera.position.z = 1750;
@@ -60,7 +61,7 @@
 
 				geometry.addAttribute( 'position', new THREE.BufferAttribute( linePos, 3 ).setDynamic( true ) );
 				geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ).setDynamic( true ) );
-
+                window.addEventListener( 'resize', onWindowResize, false );
 				geometry.computeBoundingSphere();
 
 				geometry.setDrawRange( 0, 0 );
@@ -90,6 +91,11 @@
                 pointCloud.geometry.attributes.position.needsUpdate = true;
                 requestAnimationFrame( jtree.init );
                 jtree.render();
+
+                controls = new THREE.OrbitControls( camera );
+                controls.autoRotate = true;
+                controls.addEventListener( 'change', jtree.render );
+                controls.update();
         }
 	};
 
@@ -125,4 +131,11 @@
                 group.rotation.y = time * 0.1;
 				renderer.render( scene, camera );
 	};
+
+	function onWindowResize() {
+    				camera.aspect = window.innerWidth / window.innerHeight;
+    				camera.updateProjectionMatrix();
+    				renderer.setSize( window.innerWidth, window.innerHeight );
+    }
+
 }(window.jtree = window.jtree || {}, jQuery ));

@@ -16,7 +16,7 @@
 			var r = 800;
 			var rHalf = r / 2;
 
-	jtree.init = function(container, data, window) {
+	jtree.init = function(container, data) {
 		if(data !== undefined){
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 4000 );
 				camera.position.z = 1750;
@@ -43,13 +43,10 @@
 					transparent: true,
 					sizeAttenuation: false
 				} );
-
-
 				particles = new THREE.BufferGeometry();
 				var pP2 = new Float32Array( particleCount * 3 );
 				idx = 0; idxline = 0;
                 addParticle(data.root, pP2, linePos, colors);
-
 				particles.setDrawRange( 0, particleCount );
 				particles.addAttribute( 'position', new THREE.BufferAttribute( pP2, 3 ).setDynamic( true ) );
 
@@ -58,12 +55,9 @@
 				group.add( pointCloud );
 
 				var geometry = new THREE.BufferGeometry();
-
 				geometry.addAttribute( 'position', new THREE.BufferAttribute( linePos, 3 ).setDynamic( true ) );
 				geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ).setDynamic( true ) );
-                window.addEventListener( 'resize', onWindowResize, false );
 				geometry.computeBoundingSphere();
-
 				geometry.setDrawRange( 0, 0 );
 
 				var material = new THREE.LineBasicMaterial( {
@@ -71,7 +65,6 @@
 					blending: THREE.AdditiveBlending,
 					transparent: true
 				} );
-
 				linesMesh = new THREE.LineSegments( geometry, material );
 				group.add( linesMesh );
 
@@ -87,6 +80,7 @@
 				linesMesh.geometry.setDrawRange( 0, (particleCount -1) * 2 );
                 linesMesh.geometry.attributes.position.needsUpdate = true;
                 linesMesh.geometry.attributes.color.needsUpdate = true;
+                linesMesh.frustumCulled = false;
 
                 pointCloud.geometry.attributes.position.needsUpdate = true;
                 requestAnimationFrame( jtree.init );
@@ -96,8 +90,19 @@
                 controls.autoRotate = true;
                 controls.addEventListener( 'change', jtree.render );
                 controls.update();
+
+                window.addEventListener('wheel', onDocumentMouseWheel, false);
+                zoom = 1.0;
         }
 	};
+   var zoom;
+   function onDocumentMouseWheel( event ) {
+       var wDelta = event.deltaY  < 0 ? -1 : 1;
+       console.log(event.deltaY );
+       camera.fov *= wDelta * 0.001;
+       camera.updateProjectionMatrix();
+//       jtree.render();
+   }
 
     var idx, idxline ;
     function addParticle(root, pP2, linePos, colors){

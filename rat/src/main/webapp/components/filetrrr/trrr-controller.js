@@ -15,7 +15,7 @@ angular.module('myApp.filetrrr', ['ngRoute'])
                  function (resp) {
                       $scope.dataForTheTree =  resp.data;
                       container = document.getElementById( 'container' );
-                      jtree.init(container, resp.data, window);
+                      jtree.init(container, resp.data);
                  }
              );
          };

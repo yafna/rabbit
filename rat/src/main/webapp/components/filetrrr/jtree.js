@@ -92,16 +92,17 @@
                 controls.update();
 
                 window.addEventListener('wheel', onDocumentMouseWheel, false);
-                zoom = 1.0;
         }
 	};
-   var zoom;
+
    function onDocumentMouseWheel( event ) {
-       var wDelta = event.deltaY  < 0 ? -1 : 1;
-       console.log(event.deltaY );
-       camera.fov *= wDelta * 0.001;
-       camera.updateProjectionMatrix();
-//       jtree.render();
+      if(event !== undefined && event.deltaY !== undefined && camera.fov !== undefined){
+         camera.fov += event.deltaY * 0.01;
+         camera.updateProjectionMatrix();
+         requestAnimationFrame( onDocumentMouseWheel );
+         controls.update();
+         jtree.render();
+      }
    }
 
     var idx, idxline ;
@@ -132,8 +133,6 @@
     }
 
 	jtree.render = function() {
-				var time = Date.now() * 0.001;
-                group.rotation.y = time * 0.1;
 				renderer.render( scene, camera );
 	};
 

@@ -25,9 +25,10 @@ public class Geometry {
             float angle = 0;
             for (TreeItem treeItem : root.getNodes()) {
                 treeItem.setXYZ(
-                        root.getX() + Math.round(rad * (float) Math.cos(angle * Math.PI / 180)),
-                        root.getY() + Math.round(rad * (float) Math.sin(angle * Math.PI / 180)),
-                        root.getZ() + 50);
+                        root.getX() - Math.round(rad * (float) Math.cos(angle * Math.PI / 180)),
+                        root.getY() - 50,
+                        root.getZ() - Math.round(rad * (float) Math.sin(angle * Math.PI / 180))
+                );
                 angle += rotation;
                 setXYZ(treeItem);
             }

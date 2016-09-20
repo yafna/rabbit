@@ -14,11 +14,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class GeometryTest {
 
     @Autowired
+    private TimeLine timeLine;
+
+    @Autowired
     private Geometry geometry;
 
     @Test
     public void parse() {
-        TreeItem itm = geometry.getTreeWithCoordinates();
+        TreeItem itm = geometry.getTreeWithCoordinates(timeLine.allData());
         Assert.assertNotNull(itm);
     }
 }

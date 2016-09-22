@@ -14,8 +14,10 @@ angular.module('myApp.filetrrr', ['ngRoute'])
               getData().then(
                  function (resp) {
                       $scope.dataForTheTree =  resp.data;
-                      container = document.getElementById( 'container' );
-                      jtree.init(container, resp.data);
+//                      			sample.init(document.getElementById( 'container' ));
+//                      			sample.animate();
+                      jtree.init(document.getElementById( 'container' ), resp.data, document.getElementById( 'upperRow' ).offsetHeight);
+                      jtree.animate();
                  }
              );
          };

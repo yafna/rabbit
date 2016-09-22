@@ -1,18 +1,15 @@
 'use strict';
 (function(jtxt, $, undefined ) {
 
+var textHeight = 10,
+actualFontSize = 0.12;
+
 jtxt.makeTextSprite = function( message, parameters )
 {
+
 	if ( parameters === undefined ) parameters = {};
-
-	var fontface = parameters.hasOwnProperty("fontface") ?
-		parameters["fontface"] : "Arial";
-
-	var fontsize = parameters.hasOwnProperty("fontsize") ?
-		parameters["fontsize"] : 18;
-
 	var borderThickness = parameters.hasOwnProperty("borderThickness") ?
-		parameters["borderThickness"] : 4;
+		parameters["borderThickness"] : 1;
 
 	var borderColor = parameters.hasOwnProperty("borderColor") ?
 		parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
@@ -23,34 +20,34 @@ jtxt.makeTextSprite = function( message, parameters )
 
 	var canvas = document.createElement('canvas');
 	var context = canvas.getContext('2d');
-	context.font = "Bold " + fontsize + "px " + fontface;
-
-	// get size data (height depends only on font size)
-	var metrics = context.measureText( message );
-	var textWidth = metrics.width;
-
+	var metrics = context.measureText(message);
+    var textWidth = metrics.width;
+    var fontsize = textHeight;
+    	canvas.width = textWidth + borderThickness*2;
+        canvas.height = fontsize * 1.4 + borderThickness*2;
+        context.font = "normal " + textHeight + "px Arial";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
 	// background color
-	context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
-								  + backgroundColor.b + "," + backgroundColor.a + ")";
-	// border color
-	context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
-								  + borderColor.b + "," + borderColor.a + ")";
-	context.lineWidth = borderThickness;
+	context.fillStyle   = "rgba(0,0,0,1)";
+	context.strokeStyle = "rgba(0,0,0,1)";
 	roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
 	// 1.4 is extra height factor for text below baseline: g,j,p,q.
-
+//
 	// text color
-	context.fillStyle = "rgba(0, 0, 0, 1.0)";
-	context.fillText( message, borderThickness, fontsize + borderThickness);
+	context.fillStyle = "rgba(255,255,0,1)";
+//	context.fillText( message, borderThickness, fontsize + borderThickness);
+    context.fillText(message, textWidth / 2 +1 , 6);
 
 	// canvas contents will be used for a texture
 	var texture = new THREE.Texture(canvas)
 	texture.needsUpdate = true;
-	var spriteMaterial = new THREE.SpriteMaterial(
-	{ map: texture, useScreenCoordinates: false});
+	texture.minFilter = texture.magFilter = THREE.LinearFilter;
+	var spriteMaterial = new THREE.SpriteMaterial({ map: texture});
 //		{ map: texture, useScreenCoordinates: false, alignment: spriteAlignment } );
 	var sprite = new THREE.Sprite( spriteMaterial );
-	sprite.scale.set(100,50,1.0);
+//	sprite.scale.set(100,50,1.0);-
+    sprite.scale.set(canvas.width, canvas.height, 0.5);
 	return sprite;
 }
 

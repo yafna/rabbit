@@ -13,7 +13,7 @@ public class Geometry {
 
     public TreeItem getTreeWithCoordinates(List<MethodInfo> data) {
         TreeItem root = buildTreeStructure(data);
-        root.setXYZ(0, 0, 40);
+        root.setXYZ(0, 500, 0);
         setXYZ(root);
         return root;
     }

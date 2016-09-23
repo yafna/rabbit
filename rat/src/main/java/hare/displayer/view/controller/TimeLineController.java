@@ -4,9 +4,11 @@ import hare.displayer.dto.ThreeData;
 import hare.displayer.dto.TreeItem;
 import hare.displayer.service.Geometry;
 import hare.displayer.service.TimeLine;
+import lombok.extern.slf4j.Slf4j;
 import model.MethodInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -14,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/data")
 public class TimeLineController {
@@ -22,8 +25,8 @@ public class TimeLineController {
     @Autowired
     private Geometry geometry;
 
-
-    private ThreeData calculated;
+    private ThreeData allExpandedState;
+    private ThreeData currentState;
 
     @RequestMapping("/pack")
     public
@@ -43,10 +46,19 @@ public class TimeLineController {
     public
     @ResponseBody
     ThreeData getAll() {
-        if(calculated == null) {
-            calculated = new ThreeData(geometry.getTreeWithCoordinates(timeLine.allData()));
+        if(allExpandedState == null) {
+            allExpandedState = new ThreeData(geometry.getTreeWithCoordinates(timeLine.allData()));
+            currentState = allExpandedState.clone();
         }
-        return calculated;
+        return allExpandedState;
     }
 
+    @RequestMapping("/recalculate/packages/{name}")
+    public
+    @ResponseBody
+    ThreeData recalculatePackeges(@PathVariable("name") String fullName) {
+        log.trace("{} clicked" , fullName);
+        currentState = geometry.recalculate(allExpandedState, currentState, fullName);
+        return currentState;
+    }
 }

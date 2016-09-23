@@ -3,7 +3,7 @@ package hare.displayer.dto;
 import lombok.Getter;
 
 @Getter
-public class ThreeData {
+public class ThreeData implements Cloneable{
     private TreeItem root;
     private int itemsNum;
 
@@ -18,5 +18,15 @@ public class ThreeData {
             num += getNodesNum(node);
         }
         return num;
+    }
+
+    @Override
+    public ThreeData clone() {
+        try {
+            return (ThreeData) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -29,9 +29,9 @@ jtxt.makeTextSprite = function( message, parameters )
         context.textAlign = "center";
         context.textBaseline = "middle";
 	// background color
-	context.fillStyle   = "rgba(0,0,0,1)";
-	context.strokeStyle = "rgba(0,0,0,1)";
-	roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
+//	context.fillStyle   = "rgba(0,0,0,1)";
+//	context.strokeStyle = "rgba(0,0,0,1)";
+//	roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
 	// 1.4 is extra height factor for text below baseline: g,j,p,q.
 //
 	// text color

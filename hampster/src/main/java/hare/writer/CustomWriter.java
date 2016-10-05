@@ -17,12 +17,13 @@ public class CustomWriter {
     private List<String> messages = new ArrayList<>();
 
     private CustomWriter() {
-        File f = Paths.get(Defaults.FILE_NAME_PREFIX).toFile();
+        String filePath = System.getProperty("data.file","sandbox/fffffuuu.txt");
+        File f = Paths.get(filePath).toFile();
         if (f.exists()) {
             f.delete();
         }
         try {
-            writer = new BufferedWriter(new FileWriter(Defaults.FILE_NAME_PREFIX, true));
+            writer = new BufferedWriter(new FileWriter(filePath, true));
         } catch (IOException e) {
             System.out.println("no logging for us = " + e.getLocalizedMessage());
         }

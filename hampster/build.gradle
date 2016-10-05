@@ -5,6 +5,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'org.projectlombok:lombok:1.16.6'
     testCompile 'junit:junit:4.12'
 }
 

@@ -32,10 +32,4 @@ public class GeometryTest {
         geometry.recalculate(new ThreeData(itm), new ThreeData(itm), "+forest+city+food+Bee");
         Assert.assertNotNull(itm);
     }
-
-    @Test
-    public void parseAndCollapseAndExpand() {
-        TreeItem itm = geometry.getTreeWithCoordinates(timeLine.allData());
-        Assert.assertNotNull(new ThreeData(itm), new ThreeData(itm), "+forest+city+food+Bee");
-    }
 }

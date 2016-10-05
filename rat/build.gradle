@@ -37,7 +37,7 @@ dependencies {
         exclude module: "websocket-server"
     }
 
-    compile 'org.projectlombok:lombok:1.16.6'
+    compileOnly 'org.projectlombok:lombok:1.16.6'
 
     compile group: 'org.springframework', name: 'spring-test', version: '4.1.4.RELEASE'
     testCompile 'junit:junit:4.12'

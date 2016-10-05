@@ -1,8 +1,6 @@
 package hare.displayer.service;
 
-import hare.writer.Defaults;
 import model.MethodInfo;
-import model.Parser;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -15,42 +13,44 @@ import java.util.List;
 
 @Service
 public class TimeLine {
-    private BufferedReader reader = null;
+    private BufferedReader keepStateReader = null;
+    private String fileName;
 
     public TimeLine() {
-        this("../" + Defaults.FILE_NAME_PREFIX);
+        this(System.getProperty("data.file", "../sandbox/fffffuuu.txt"));
     }
 
     private TimeLine(String fileName) {
+        this.fileName = fileName;
         if (!Paths.get(fileName).toFile().exists()) {
             System.out.println("fileName = " + fileName);
         }
         try {
-            this.reader = new BufferedReader(new FileReader(fileName));
+            this.keepStateReader = new BufferedReader(new FileReader(fileName));
         } catch (FileNotFoundException e) {
             System.out.println("failed to read data = " + e.getLocalizedMessage());
         }
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                if (reader != null) {
+                if (keepStateReader != null) {
                     try {
-                        reader.close();
+                        keepStateReader.close();
                     } catch (IOException e) {
-                        System.out.println("failed to close reader " + e.getLocalizedMessage());
+                        System.out.println("failed to close keepStateReader " + e.getLocalizedMessage());
                     }
                 }
             }
         });
     }
 
-    public List<MethodInfo> allData(){
+    public List<MethodInfo> allData() {
         List<MethodInfo> res = new ArrayList<>();
-        try {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line = reader.readLine();
             while (line != null) {
-                if (Parser.isMethodLine(line)) {
-                    res.add(Parser.getMethodLine(line));
+                if (MethodInfo.isMethodLine(line)) {
+                    res.add(new MethodInfo(line));
                 }
                 line = reader.readLine();
             }
@@ -60,20 +60,20 @@ public class TimeLine {
         return res;
     }
 
-    public List<MethodInfo> packOfData(int size){
+    public List<MethodInfo> packOfData(int size) {
         List<MethodInfo> res = new ArrayList<>();
         try {
-            String line = reader.readLine();
+            String line = keepStateReader.readLine();
             while (line != null && size > 1) {
-                if (Parser.isMethodLine(line)) {
-                    res.add(Parser.getMethodLine(line));
+                if (MethodInfo.isMethodLine(line)) {
+                    res.add(new MethodInfo(line));
                 }
                 size--;
-                line = reader.readLine();
+                line = keepStateReader.readLine();
             }
 
-            if (line != null && Parser.isMethodLine(line)) {
-                res.add(Parser.getMethodLine(line));
+            if (line != null && MethodInfo.isMethodLine(line)) {
+                res.add(new MethodInfo(line));
             }
 
         } catch (IOException ex) {
